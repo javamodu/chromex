@@ -23,7 +23,6 @@ class TempEnvTestCase(unittest.TestCase):
         os.environ["AUDIT_DIR"] = str(Path(self.tmp.name) / "audit")
         os.environ["STORE_DB"] = str(Path(self.tmp.name) / "results.db")
         os.environ["POLICY_FILE"] = str(Path(self.tmp.name) / "yok.json")
-        audit._last_cache.clear()
 
     def tearDown(self) -> None:
         self.tmp.cleanup()

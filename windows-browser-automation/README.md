@@ -137,7 +137,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-43 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+46 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
 linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
 Playwright gerektirmez, offline çalışır.
@@ -146,18 +146,18 @@ Playwright gerektirmez, offline çalışır.
 
 | Parça | Satır |
 |---|---|
-| core/ (secrets, audit, policy, approval, store, http) | 444 |
+| core/ (secrets, audit, policy, approval, store, http, log) | 498 |
 | workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 847 |
-| orchestrator/cli.py | 217 |
-| tests/ | 611 |
+| orchestrator/cli.py (registry desenli) | 260 |
+| tests/ | 651 |
 | blender/ | 47 |
-| Python toplam | **2.166** |
+| Python toplam | **2.303** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 178 |
 
 ## Bilinen sadeleştirmeler
 
-- Audit zinciri tek süreç varsayımıyla yazılmıştır; çok işlemli eşzamanlı
-  yazım için dosya kilidi eklenmelidir.
+- Audit yazımları `audit.lock` üzerinden çapraz-platform kilitlenir
+  (Windows msvcrt / POSIX fcntl); çok-süreç eşzamanlı yazım güvenlidir.
 - X token yenileme yeni token'ı `data/x_tokens.env` dosyasına yazar; `.env`'e
   taşıyıp dosyayı silmek size kalır (terminale token basılmaz).
 - Retry/backoff artık `core/http.py`'de: 429/5xx/ağ hatalarında üstel geri

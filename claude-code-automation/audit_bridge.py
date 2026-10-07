@@ -4,6 +4,11 @@
 Plan 2'deki core/audit.py ile BİREBİR AYNI formatta append-only, SHA-256
 hash zincirli JSONL üretir; iki zincir aynı araçlarla doğrulanabilir.
 
+Bu dosya bilinçli bir KOPYADIR: kit başka projelere taşınabilmesi için
+bağımsız tutulur. Format eşdeğerliği windows-browser-automation tarafındaki
+tests/test_workers.py::AuditBridgeParityTests ile sabitlenmiştir —
+core/audit.py'nin formatını değiştirirsen burayı da güncelle (ve tersi).
+
 Kullanım:
     python3 audit_bridge.py log <event> [anahtar=deger ...]
     python3 audit_bridge.py verify
@@ -21,6 +26,29 @@ import time
 from pathlib import Path
 
 _GENESIS = "0" * 64
+
+if os.name == "nt":
+    import msvcrt
+
+    def _lock(fh) -> None:
+        fh.seek(0, 2)
+        if fh.tell() == 0:
+            fh.write(b"\0")
+            fh.flush()
+        fh.seek(0)
+        msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+
+    def _unlock(fh) -> None:
+        fh.seek(0)
+        msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+else:
+    import fcntl
+
+    def _lock(fh) -> None:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+
+    def _unlock(fh) -> None:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
 
 
 def _audit_file() -> Path:
@@ -54,20 +82,26 @@ def _last() -> tuple[str, int]:
 def log(event: str, details: dict) -> dict:
     path = _audit_file()
     path.parent.mkdir(parents=True, exist_ok=True)
-    prev, seq = _last()
-    record = {
-        "seq": seq + 1,
-        "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-        "event": event,
-        "worker": "ralph",
-        "level": "READ",
-        "decision": "auto",
-        "details": details,
-        "prev_hash": prev,
-    }
-    record["hash"] = _record_hash(prev, record)
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(_canonical(record) + "\n")
+    lock_path = path.with_suffix(".lock")
+    with open(lock_path, "a+b") as lock_fh:
+        _lock(lock_fh)
+        try:
+            prev, seq = _last()
+            record = {
+                "seq": seq + 1,
+                "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                "event": event,
+                "worker": "ralph",
+                "level": "READ",
+                "decision": "auto",
+                "details": details,
+                "prev_hash": prev,
+            }
+            record["hash"] = _record_hash(prev, record)
+            with path.open("a", encoding="utf-8") as fh:
+                fh.write(_canonical(record) + "\n")
+        finally:
+            _unlock(lock_fh)
     return record
 
 

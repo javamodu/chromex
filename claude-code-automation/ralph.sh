@@ -3,7 +3,7 @@
 # çağırıp PLAN.md'deki maddeleri bir bir bitirtir.
 #
 # Her iterasyonda:
-#   1) claude -p "$(cat PROMPT.md)" --dangerously-skip-permissions  (headless)
+#   1) $AGENT_CMD "$(cat PROMPT.md)"   (headless; prompt sona eklenir)
 #   2) Ajan PLAN.md'deki İLK işaretsiz "- [ ]" maddeyi yapar, testleri koşar,
 #      geçerse kutuyu [x] yapıp commit atar ve çıkar.
 #   3) Döngü: limit yendiyse bekler; işaretsiz madde kalmadıysa biter.
@@ -17,6 +17,10 @@
 #   PLAN   : plan dosyası                  (varsayılan PLAN.md)
 #   PROMPT : ajan talimat dosyası          (varsayılan PROMPT.md)
 #   LOG    : log dosyası                   (varsayılan ralph.log)
+#   AGENT_CMD : ajan komut şablonu; prompt sona eklenir
+#               (varsayılan: claude -p --dangerously-skip-permissions)
+#               ör. Codex: AGENT_CMD="codex exec --dangerously-bypass-approvals-and-sandbox"
+#               ör. Gemini: AGENT_CMD="gemini --yolo"
 set -euo pipefail
 
 MAX=${MAX:-50}
@@ -24,6 +28,7 @@ WAIT=${WAIT:-900}
 PLAN=${PLAN:-PLAN.md}
 PROMPT=${PROMPT:-PROMPT.md}
 LOG=${LOG:-ralph.log}
+AGENT_CMD=${AGENT_CMD:-"claude -p --dangerously-skip-permissions"}
 
 # Audit köprüsü: iterasyonlar Plan 2 uyumlu hash zincirine yazılır
 # (python3 yoksa sessizce atlanır; doğrulama: python3 audit_bridge.py verify)
@@ -35,8 +40,9 @@ audit_log() {
 }
 
 # --- Ön kontroller ---------------------------------------------------------
-command -v claude >/dev/null 2>&1 || {
-  echo "HATA: 'claude' CLI bulunamadı (npm i -g @anthropic-ai/claude-code)"; exit 1; }
+command -v "${AGENT_CMD%% *}" >/dev/null 2>&1 || {
+  echo "HATA: '${AGENT_CMD%% *}' bulunamadı — AGENT_CMD değişkenini kontrol et."
+  exit 1; }
 [ -f "$PLAN" ]   || { echo "HATA: $PLAN yok. Önce planını yaz."; exit 1; }
 [ -f "$PROMPT" ] || { echo "HATA: $PROMPT yok. Ajan kurallarını yaz."; exit 1; }
 
@@ -61,7 +67,8 @@ for i in $(seq 1 "$MAX"); do
 
   iter_log="$(mktemp)"
   set +e
-  claude -p "$(cat "$PROMPT")" --dangerously-skip-permissions 2>&1 | tee "$iter_log"
+  # Kelime bölme bilinçli: AGENT_CMD birden çok token içerir (ör. "codex exec ...")
+  $AGENT_CMD "$(cat "$PROMPT")" 2>&1 | tee "$iter_log"
   status=${PIPESTATUS[0]}
   set -e
   cat "$iter_log" >> "$LOG"
@@ -78,7 +85,7 @@ for i in $(seq 1 "$MAX"); do
   rm -f "$iter_log"
 
   if [ "$status" -ne 0 ]; then
-    echo "claude çıkış kodu: $status — ${WAIT}s sonra tekrar." | tee -a "$LOG"
+    echo "ajan çıkış kodu: $status — ${WAIT}s sonra tekrar." | tee -a "$LOG"
     audit_log iteration_error "i=$i" "exit=$status"
     sleep "$WAIT"
   fi

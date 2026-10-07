@@ -17,10 +17,10 @@ chromex/
 │   └── docs/                        → Orkestrasyon planı
 └── windows-browser-automation/      → Windows/Browser otomasyonu
     ├── README.md
-    ├── core/                        → approval, audit, policy, http, secrets, store
+    ├── core/                        → approval, audit, policy, http, secrets, store, log
     ├── workers/                     → github, gmail, x, linkedin, canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
-    ├── tests/                       → 43 birim test (core + worker, offline)
+    ├── tests/                       → 46 birim test (core + worker + parite, offline)
     ├── config/                      → policy.json, .env.example, MCP config
     └── scripts/                     → setup.ps1, Chrome başlat/durdur
 ```

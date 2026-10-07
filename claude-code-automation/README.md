@@ -2,7 +2,7 @@
 
 Bir planı ve alt görevlerini kodlama ajanına **OS seviyesinde, bir bir,
 onay için durmadan** tamamlatmak; rate-limit'e takılınca **bekleyip kaldığı
-yerden sürdürmek** için minimal kit. Kendi kodun ~290 satır (shell + audit
+yerden sürdürmek** için minimal kit. Kendi kodun ~330 satır (shell + audit
 köprüsü); gerisi hazır araçlar.
 
 ```text
@@ -40,7 +40,9 @@ bash run-sandbox.sh /host/proje/yolu --claude-config   # abonelik girişiyle
 
 # 3) Çalıştır:
 MAX=50 bash ralph.sh
-# Ayarlar: MAX (tur), WAIT (limit beklemesi sn), PLAN, PROMPT, LOG
+# Ayarlar: MAX (tur), WAIT (limit beklemesi sn), PLAN, PROMPT, LOG,
+# AGENT_CMD (ajan komutu; varsayılan claude — örn. "codex exec
+# --dangerously-bypass-approvals-and-sandbox" veya "gemini --yolo")
 ```
 
 İzleme: `tail -f ralph.log`. Sağlıklı koşuda her turda bir madde `[x]` olur

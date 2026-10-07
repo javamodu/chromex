@@ -49,7 +49,6 @@ class WorkerTestCase(unittest.TestCase):
             os.environ[name] = f"test-{name.lower()}"
         self._cwd = os.getcwd()
         os.chdir(self.tmp.name)
-        audit._last_cache.clear()
 
     def tearDown(self) -> None:
         os.chdir(self._cwd)
@@ -393,3 +392,45 @@ class CliTests(WorkerTestCase):
         with redirect_stdout(io.StringIO()) as buf:
             self.assertEqual(main(["son-kayitlar"]), 0)
         self.assertIn("github", buf.getvalue())
+
+
+class CoreLogTests(WorkerTestCase):
+    def test_seviye_env_den_okunur(self):
+        os.environ["OTOMASYON_LOG"] = "DEBUG"
+        from core import log
+        self.assertEqual(log.get("test.modul").level, 10)  # logging.DEBUG
+        os.environ.pop("OTOMASYON_LOG", None)
+
+    def test_handler_tekil_ve_tekrarli_cagri_ayni(self):
+        from core import log
+        first, second = log.get("x.y"), log.get("x.y")
+        self.assertIs(first, second)
+        self.assertEqual(len(first.handlers), 1)
+
+
+class AuditBridgeParityTests(WorkerTestCase):
+    """claude-code-automation/audit_bridge.py (taşınabilir kopya) ile
+    core/audit.py AYNI zincir formatını üretmeli; iki taraf da karşı
+    tarafın kayıtlarını doğrulayabilmeli."""
+
+    def _bridge(self):
+        import importlib.util
+        path = (Path(self._cwd).parent
+                / "claude-code-automation" / "audit_bridge.py")
+        spec = importlib.util.spec_from_file_location("audit_bridge", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_karsilikli_zincir_dogrulama(self):
+        bridge = self._bridge()
+        audit.log_event("core_olay", "test", "READ", "auto", {"n": 1})
+        bridge.log("bridge_olay", {"n": 2})
+        audit.log_event("core_olay_2", "test", "READ", "auto", {"n": 3})
+        ok, msg = audit.verify_chain()
+        self.assertTrue(ok, msg)
+        ok_b, msg_b = bridge.verify()
+        self.assertTrue(ok_b, msg_b)
+        lines = (audit._audit_file().read_text(encoding="utf-8")
+                 .strip().splitlines())
+        self.assertEqual([json.loads(l)["seq"] for l in lines], [1, 2, 3])

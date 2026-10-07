@@ -18,6 +18,9 @@ from typing import Any
 import requests
 
 from . import audit
+from .log import get as _get_logger
+
+_log = _get_logger("http")
 
 
 class HttpError(RuntimeError):
@@ -60,6 +63,8 @@ def request_json(
             audit.log_event("http_retry", worker, level, "auto", {
                 "url": url, "neden": type(exc).__name__,
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
+            _log.info("%s ağ hatası — %.1fs sonra tekrar (%d/%d)",
+                      url, wait, attempt + 1, max_retries + 1)
             time.sleep(wait)
             attempt += 1
             continue
@@ -74,6 +79,8 @@ def request_json(
             audit.log_event("http_retry", worker, level, "auto", {
                 "url": url, "neden": f"HTTP {resp.status_code}",
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
+            _log.info("%s HTTP %s — %.1fs sonra tekrar (%d/%d)",
+                      url, resp.status_code, wait, attempt + 1, max_retries + 1)
             time.sleep(wait)
             attempt += 1
             continue
