@@ -135,8 +135,10 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-16 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
-HTTP retry/backoff ve depo katmanını kapsar. Ek bağımlılık gerektirmez, offline çalışır.
+43 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
+linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
+Playwright gerektirmez, offline çalışır.
 
 ## Satır sayıları (gerçek)
 
@@ -145,9 +147,9 @@ HTTP retry/backoff ve depo katmanını kapsar. Ek bağımlılık gerektirmez, of
 | core/ (secrets, audit, policy, approval, store, http) | 444 |
 | workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 847 |
 | orchestrator/cli.py | 217 |
-| tests/ | 216 |
+| tests/ | 611 |
 | blender/ | 47 |
-| Python toplam | **1.771** |
+| Python toplam | **2.166** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 178 |
 
 ## Bilinen sadeleştirmeler

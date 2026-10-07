@@ -20,7 +20,7 @@ chromex/
     ├── core/                        → approval, audit, policy, http, secrets, store
     ├── workers/                     → github, gmail, x, linkedin, canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
-    ├── tests/                       → 16 birim test
+    ├── tests/                       → 43 birim test (core + worker, offline)
     ├── config/                      → policy.json, .env.example, MCP config
     └── scripts/                     → setup.ps1, Chrome başlat/durdur
 ```
