@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--browser-url=http://127.0.0.1:9222"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--extension"]
+    },
+    "terminator": {
+      "command": "npx",
+      "args": ["-y", "terminator-mcp-agent@latest"]
+    },
+    "windows-mcp": {
+      "command": "uvx",
+      "args": ["windows-mcp"]
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--read-only", "--project-ref=PROJE_REF_BURAYA"],
+      "env": { "SUPABASE_ACCESS_TOKEN": "KISISEL_ERISIM_TOKENI_BURAYA" }
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com"
+    }
+  }
+}

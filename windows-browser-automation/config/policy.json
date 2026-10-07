@@ -1,0 +1,11 @@
+{
+  "levels": {
+    "READ": "auto",
+    "DRAFT": "auto",
+    "SEND": "ask",
+    "MODIFY": "ask",
+    "DELETE": "ask"
+  },
+  "non_interactive_default": "deny",
+  "always_deny": []
+}
