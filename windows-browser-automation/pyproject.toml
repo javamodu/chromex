@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chromex-otomasyon"
+version = "1.1.0"
+description = "API-öncelikli araştırma otomasyonu (onay kapısı + SHA-256 audit zinciri)"
+readme = "README.md"
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[project.scripts]
+otomasyon = "orchestrator.cli:main"
+
+[tool.setuptools]
+packages = ["core", "workers", "orchestrator"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

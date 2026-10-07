@@ -22,7 +22,9 @@ Agent / sen
 
 1. Gerekenler: Windows 10/11, Python 3.11+, Node.js 20+.
 2. `scripts\setup.ps1` çalıştırın (playwright-cli + skills, supabase, vercel,
-   gh CLI, pip bağımlılıkları).
+   gh CLI, pip bağımlılıkları). Alternatif paket kurulumu: `pip install -e .`
+   — `otomasyon` komutunu PATH'e ekler (bağımlılıklar requirements.txt'den
+   okunur).
 3. `.env.example` → `.env` kopyalayıp doldurun (aşağıdaki servis notlarına bakın).
 4. Otomasyon tarayıcısı: `scripts\start-chrome-automation.ps1`
    — ayrı profil + `127.0.0.1:9222` CDP portu açar. **İlk seferde hedef
