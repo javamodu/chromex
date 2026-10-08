@@ -19,9 +19,9 @@ jobs:
         run: |
           pip install -e ./policy-gate
           pip install -r windows-browser-automation/requirements.txt
-      - name: policygate testleri (13 adet, offline)
+      - name: policygate testleri (30 adet, offline)
         working-directory: policy-gate
         run: python -m unittest discover -s tests -v
-      - name: wba testleri (43 adet, offline)
+      - name: wba testleri (35 adet, offline)
         working-directory: windows-browser-automation
         run: python -m unittest discover -s tests -v

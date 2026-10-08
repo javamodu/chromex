@@ -45,7 +45,12 @@ def command(name: str, help: str, args: ArgSpec = ()):
 
 
 def _print(obj) -> None:
-    print(json.dumps(obj, ensure_ascii=False, indent=2, default=str))
+    text = json.dumps(obj, ensure_ascii=False, indent=2, default=str)
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # cp1252 gibi sınırlı konsollar: ASCII-kaçışlı çıktıya düş
+        print(json.dumps(obj, ensure_ascii=True, indent=2, default=str))
 
 
 # --- GitHub ---------------------------------------------------------------

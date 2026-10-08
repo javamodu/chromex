@@ -24,6 +24,16 @@ from .log import get as _get_logger
 _log = _get_logger("approval")
 
 
+def _console_safe(text: str) -> str:
+    """cp1252 gibi sınırlı kod sayfalı konsollarda patlamamak için metni
+    gerektiğinde ASCII'ye katlar (UTF-8 konsolda metne dokunulmaz)."""
+    try:
+        text.encode(sys.stdout.encoding or "utf-8")
+        return text
+    except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
+        return text.encode("ascii", "replace").decode()
+
+
 class ApprovalDenied(Exception):
     """İşlem policy veya kullanıcı tarafından reddedildi."""
 
@@ -45,16 +55,16 @@ class ApprovalChannel(Protocol):
 
 
 def _show(req: ActionRequest) -> None:
-    print("\n" + "=" * 62)
-    print(f"ONAY GEREKİYOR  [{req.level.upper()}]  {req.action}")
-    print("-" * 62)
-    print(req.summary)
+    print(_console_safe("\n" + "=" * 62))
+    print(_console_safe(f"ONAY GEREKİYOR  [{req.level.upper()}]  {req.action}"))
+    print(_console_safe("-" * 62))
+    print(_console_safe(req.summary))
     for key, value in req.details.items():
         text = str(value)
         if len(text) > 600:
             text = text[:600] + f"... (+{len(text) - 600} karakter)"
-        print(f"  {key}: {text}")
-    print("-" * 62)
+        print(_console_safe(f"  {key}: {text}"))
+    print(_console_safe("-" * 62))
 
 
 class TerminalChannel:
@@ -62,7 +72,8 @@ class TerminalChannel:
 
     def ask(self, req: ActionRequest) -> bool:
         _show(req)
-        answer = input("Bu işlemi onaylıyor musunuz? Yalnızca 'EVET' kabul edilir: ")
+        answer = input(_console_safe(
+            "Bu işlemi onaylıyor musunuz? Yalnızca 'EVET' kabul edilir: "))
         return answer.strip() == "EVET"
 
 

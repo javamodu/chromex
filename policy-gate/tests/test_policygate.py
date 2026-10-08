@@ -154,6 +154,25 @@ class ApprovalTests(TempEnvTestCase):
             with self.assertRaises(ApprovalDenied):
                 require(self._req("SEND"))
 
+    def test_cp1252_konsolda_banner_cokmez(self):
+        # Windows CI/konsol cp1252'dir; Türkçe banner UnicodeEncodeError
+        # fırlatmamalı (ASCII katlama devreye girer).
+        class CP1252Yazici:
+            encoding = "cp1252"
+
+            def write(self, s):
+                s.encode("cp1252")  # katlanmamış karakterde gerçek konsol gibi patlar
+
+            def flush(self):
+                pass
+
+        fake_stdin = mock.MagicMock()
+        fake_stdin.isatty.return_value = True
+        with mock.patch("policygate.approval.sys.stdin", fake_stdin), \
+             mock.patch("policygate.approval.sys.stdout", CP1252Yazici()), \
+             mock.patch("builtins.input", return_value="EVET"):
+            require(self._req("SEND"))  # fırlatmamalı
+
 
 class _FakeChannel:
     def __init__(self, cevap: bool) -> None:
