@@ -15,6 +15,8 @@ chromex/
 │   ├── run-sandbox.sh               → Docker izolasyonu
 │   ├── PLAN.md / PROMPT.md / DECISIONS.md → Şablonlar
 │   └── docs/                        → Orkestrasyon planı
+├── docs/                            → Tasarım taslakları + arşiv (eski TECH envanterleri)
+├── policy-gate/                     → (TASLAK) onay+audit pip paketi — bkz. docs/policy-gate-taslak.md
 └── windows-browser-automation/      → Windows/Browser otomasyonu
     ├── README.md
     ├── core/                        → approval, audit, policy, http, secrets, store, log
@@ -105,6 +107,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
 | Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 56 test |
+| policygate | 🧪 TASLAK | 5 modül + 13 test (docs/policy-gate-taslak.md) |
 
 ---
 

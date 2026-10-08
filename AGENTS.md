@@ -10,6 +10,7 @@ Bu depo iki bağımsız araç seti içerir:
 | İş | Komut |
 |---|---|
 | Testler | `cd windows-browser-automation; python -m unittest discover -s tests` |
+| policy-gate testleri | `cd policy-gate; $env:PYTHONPATH="src"; python -m unittest discover -s tests` |
 | CLI | `python -m orchestrator.cli <komut>` (paket kuruluysa `otomasyon <komut>`) |
 | Kurulum | `python -m pip install -e windows-browser-automation` |
 
