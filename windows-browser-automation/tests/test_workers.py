@@ -28,8 +28,8 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
-from core import audit, store
-from core.approval import ApprovalDenied
+from core import store
+from policygate import ApprovalDenied, audit
 
 _ENV_VARS = [
     "GITHUB_TOKEN", "X_ACCESS_TOKEN", "X_USER_ID", "X_CLIENT_ID",
@@ -434,12 +434,12 @@ class CliTests(WorkerTestCase):
 class CoreLogTests(WorkerTestCase):
     def test_seviye_env_den_okunur(self):
         os.environ["OTOMASYON_LOG"] = "DEBUG"
-        from core import log
+        from policygate import log
         self.assertEqual(log.get("test.modul").level, 10)  # logging.DEBUG
         os.environ.pop("OTOMASYON_LOG", None)
 
     def test_handler_tekil_ve_tekrarli_cagri_ayni(self):
-        from core import log
+        from policygate import log
         first, second = log.get("x.y"), log.get("x.y")
         self.assertIs(first, second)
         self.assertEqual(len(first.handlers), 1)
@@ -447,7 +447,7 @@ class CoreLogTests(WorkerTestCase):
 
 class AuditBridgeParityTests(WorkerTestCase):
     """claude-code-automation/audit_bridge.py (taşınabilir kopya) ile
-    core/audit.py AYNI zincir formatını üretmeli; iki taraf da karşı
+    policygate.audit AYNI zincir formatını üretmeli; iki taraf da karşı
     tarafın kayıtlarını doğrulayabilmeli."""
 
     def _bridge(self):

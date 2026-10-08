@@ -14,6 +14,8 @@ Write-Host "== Python bagimliliklari =="
 python -m pip install --upgrade pip
 # Script nereden cagrilirsa cagrilsin paket kokundeki requirements'i bulur:
 python -m pip install -r "$PSScriptRoot\..\requirements.txt"
+# Guvenlik cekirdegi ayri paket (v0.2 cutover): once policygate kurulur.
+python -m pip install -e "$PSScriptRoot\..\..\policy-gate"
 
 Write-Host ""
 Write-Host "Kurulum bitti. Sonraki adimlar:"

@@ -14,8 +14,7 @@ from __future__ import annotations
 import shutil
 import subprocess
 
-from core import audit, secrets
-from core.approval import ActionRequest, require
+from policygate import ActionRequest, audit, require, secrets
 from core.http import request_json
 
 WORKER = "supabase"

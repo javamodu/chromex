@@ -8,8 +8,7 @@ cancel_deployment, MODIFY seviyesinde onay kapısının nasıl kullanılacağın
 """
 from __future__ import annotations
 
-from core import audit, secrets
-from core.approval import ActionRequest, require
+from policygate import ActionRequest, audit, require, secrets
 from core.http import request_json
 
 WORKER = "vercel"

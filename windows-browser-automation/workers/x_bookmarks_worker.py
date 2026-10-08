@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import json
 
-from core import audit, oauth, secrets, store
+from core import oauth, store
+from policygate import audit, secrets
 from core.http import request_json
 
 WORKER = "x"

@@ -14,7 +14,8 @@ Agent / sen
    └─ python -m orchestrator.cli ── API worker'ları
                 │
                 ├─ workers/  github · gmail · x · linkedin (API + tarayıcı) · canva · supabase · vercel
-                ├─ core/     policy → onay kapısı → audit zinciri → SQLite depo
+                ├─ policygate (paket)  policy → onay kapısı → audit zinciri → redaksiyon
+                ├─ core/     store (SQLite) · http köprüsü · oauth
                 └─ blender/  bpy örneği
 ```
 
@@ -22,7 +23,8 @@ Agent / sen
 
 1. Gerekenler: Windows 10/11, Python 3.11+, Node.js 20+.
 2. `scripts\setup.ps1` çalıştırın (playwright-cli + skills, supabase, vercel,
-   gh CLI, pip bağımlılıkları). Alternatif paket kurulumu: `pip install -e .`
+   gh CLI, pip bağımlılıkları + policygate çekirdek paketi). Alternatif paket
+   kurulumu: `pip install -e ../policy-gate` ardından `pip install -e .`
    — `otomasyon` komutunu PATH'e ekler (bağımlılıklar requirements.txt'den
    okunur).
 3. `.env.example` → `.env` kopyalayıp doldurun (aşağıdaki servis notlarına bakın).
@@ -137,7 +139,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-56 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+43 test (+ policygate paketinde 13); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
 linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
 Playwright gerektirmez, offline çalışır.

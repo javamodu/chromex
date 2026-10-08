@@ -12,7 +12,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from core import audit, secrets
+from policygate import audit, secrets
 from core.http import request_json
 
 WORKER = "canva"

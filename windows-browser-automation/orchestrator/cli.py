@@ -18,8 +18,8 @@ import json
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from core import audit, secrets, store
-from core.approval import ApprovalDenied
+from core import store
+from policygate import ApprovalDenied, audit, secrets
 
 Handler = Callable[[argparse.Namespace], "int | None"]
 ArgSpec = tuple[tuple[str, dict[str, Any]], ...]

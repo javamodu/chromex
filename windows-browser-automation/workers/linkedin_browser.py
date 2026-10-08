@@ -22,7 +22,8 @@ from __future__ import annotations
 import json
 from urllib.parse import quote
 
-from core import audit, store
+from core import store
+from policygate import audit
 
 WORKER = "linkedin"
 CDP_URL = "http://127.0.0.1:9222"

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from . import audit
+from policygate import audit
 
 
 def refresh_access_token(

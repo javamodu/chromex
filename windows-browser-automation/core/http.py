@@ -19,8 +19,8 @@ from typing import Any
 
 import requests
 
-from . import audit, secrets
-from .log import get as _get_logger
+from policygate import audit, secrets
+from policygate.log import get as _get_logger
 
 _log = _get_logger("http")
 

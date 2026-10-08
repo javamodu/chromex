@@ -25,8 +25,8 @@ from __future__ import annotations
 
 import json
 
-from core import audit, oauth, secrets, store
-from core.approval import ActionRequest, require
+from core import oauth, store
+from policygate import ActionRequest, audit, require, secrets
 from core.http import request_json
 
 WORKER = "linkedin"

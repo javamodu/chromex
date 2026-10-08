@@ -10,8 +10,8 @@ import json
 import shutil
 import subprocess
 
-from core import audit, secrets, store
-from core.approval import ActionRequest, require
+from core import store
+from policygate import ActionRequest, audit, require, secrets
 from core.http import request_json
 
 WORKER = "github"

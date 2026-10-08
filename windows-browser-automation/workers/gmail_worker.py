@@ -17,8 +17,8 @@ import os
 from email.message import EmailMessage
 from pathlib import Path
 
-from core import audit, store
-from core.approval import ActionRequest, require
+from core import store
+from policygate import ActionRequest, audit, require
 
 WORKER = "gmail"
 SCOPES = [
