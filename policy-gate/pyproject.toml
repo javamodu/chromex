@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "policygate"
-version = "0.1.0"
+version = "1.0.0"
 description = "AI ajanları için sıfır-bağımlılıklı onay kapısı + SHA-256 audit zinciri (stdlib-only)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 keywords = ["agent", "approval", "audit", "policy", "human-in-the-loop", "llm", "security"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -17,9 +17,6 @@ classifiers = [
     "Topic :: Security",
     "Topic :: Software Development :: Libraries",
 ]
-
-[project.urls]
-Homepage = "https://example.invalid/policygate"  # TODO: yayın öncesi gerçek repo URL'si
 
 [tool.setuptools.packages.find]
 where = ["src"]

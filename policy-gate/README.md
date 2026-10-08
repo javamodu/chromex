@@ -69,8 +69,30 @@ ok, mesaj = verify_chain()   # (True, "Zincir sağlam: 42 kayıt.")
 
 Ortam değişkenleri: `POLICY_FILE`, `AUDIT_DIR`, `OTOMASYON_LOG`.
 
+## Onay kanalları
+
+Varsayılan kanal terminaldir (tam detay + birebir 'EVET'). Gömülü
+uygulamalar veya bot köprüleri kendi kanalını takabilir:
+
+```python
+from policygate import WebhookChannel, set_channel
+
+# Onayları Slack/mobil köprüye sor (cron'da SEND/DELETE için de):
+set_channel(WebhookChannel("https://bot.ornek.com/onay"),
+            allow_non_interactive=True)
+```
+
+Webhook yanıtı JSON `{"approve": true}` olmalı; ağ hatası red sayılır
+(fail-closed) ve kararlar kanal adıyla audit zincirine yazılır.
+
+## Opsiyonel HTTP yardımcısı
+
+`pip install "policygate[http]"` → retry/backoff + secret maskeli hatalar
+üreten `policygate.http.request_json` kullanılabilir (requests ister).
+
 ## Durum
 
-**0.1.0 — taslak/alfa.** Chromex deposundan çıkarılan ilk iskelet;
-`windows-browser-automation` paketi henüz bunu kullanmıyor (geçiş planı:
-`docs/policy-gate-taslak.md`).
+**1.0.0 — yayına hazır.** `windows-browser-automation` bu paketi doğrudan
+kullanıyor (v0.2 cutover tamam). PyPI yayını için kalan manuel adımlar:
+paket adı müsaitlik kontrolü, trusted publisher tanımı, gerçek repo URL'si
+— bkz. `../docs/policy-gate-taslak.md`.

@@ -106,8 +106,8 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 56 test |
-| policygate | 🧪 TASLAK | 5 modül + 13 test (docs/policy-gate-taslak.md) |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 35 test |
+| policygate | ✅ v1.0.0 (yayına hazır) | 6 modül + 29 test (docs/policy-gate-taslak.md) |
 
 ---
 

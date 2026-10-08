@@ -18,7 +18,7 @@ from .approval import (ActionRequest, ApprovalChannel, ApprovalDenied,
 from .audit import log_event, verify_chain
 from .policy import DEFAULT_POLICY, decision_for, load
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 __all__ = [
     "ActionRequest", "ApprovalDenied", "require",

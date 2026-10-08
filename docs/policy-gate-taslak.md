@@ -1,6 +1,7 @@
 # policygate — Bağımsız pip Paketi Taslağı
 
-**Durum:** taslak (v0.1.0 iskeleti `policy-gate/` altında çalışır durumda, 13 test OK)
+**Durum:** v1.0.0 yayına hazır — v0.2/v0.3/v0.4 tamamlandı (29+35 test OK);
+kalan yalnızca manuel PyPI adımları (aşağıda).
 **Tarih:** 2026-10-08
 
 ## Neden?
@@ -52,12 +53,18 @@ onayı (webhook/Slack onayı yol haritasında).
 
 ## Yol Haritası
 
-- **v0.1** (bu taslak): iskelet, 13 test, editable install OK
-- **v0.2**: wba cutover (shim → doğrudan import), CI'da iki paket matrisi
-- **v0.3**: onay kanalı soyutlaması (terminal dışı: webhook/Slack callback)
-- **v0.4**: `py.typed`, policy şema doğrulaması, `policygate[http]` extra
-- **v1.0**: PyPI yayını — önce: PyPI'da `policygate` adı müsait mi kontrolü,
-  LICENSE dosyası (MIT önerisi), gerçek repo URL'si, `publish.yml` (trusted publisher)
+- **v0.1** ✅ iskelet, testler, editable install
+- **v0.2** ✅ wba cutover: shim'siz doğrudan import; CI iki paketli
+- **v0.3** ✅ onay kanalı soyutlaması: ApprovalChannel protokolü,
+  TerminalChannel, WebhookChannel (fail-closed), set_channel
+- **v0.4** ✅ `py.typed`, policy şema doğrulaması, `policygate[http]` extra
+  (http modülü pakete taşındı; wba'ya ince köprü kaldı)
+- **v1.0** ✅ yayın hazırlığı: LICENSE (MIT), publish-policygate.yml
+  (trusted publisher), sürüm 1.0.0
 
-Tahmini ek iş: v1.0'a kadar ~300-400 satır (CI publish, docs, typing, kanal
-soyutlaması hariç; kanal soyutlaması +150-200 satır).
+Kalan MANUEL adımlar (hesap/izin gerektirir):
+1. PyPI'da `policygate` adının müsaitlik kontrolü
+2. PyPI projesinde bu repo + publish-policygate.yml + "pypi" environment
+   ile trusted publisher tanımı
+3. pyproject.toml'a gerçek repo URL'si ([project.urls])
+4. GitHub Release aç → otomatik yayın

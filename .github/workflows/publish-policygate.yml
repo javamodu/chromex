@@ -1,0 +1,29 @@
+# policygate PyPI yayını — GitHub Releases üzerinden trusted publisher ile.
+# Kurulum: PyPI'da projeye "GitHub trusted publisher" olarak bu repo +
+# bu dosya + "pypi" environment'ı tanımlanır; yayın GitHub Release açınca tetiklenir.
+name: policygate-yayin
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # trusted publisher (OIDC) — API token gerekmez
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Paketi derle
+        working-directory: policy-gate
+        run: |
+          pip install build
+          python -m build
+      - name: PyPI'a yayınla
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: policy-gate/dist/
