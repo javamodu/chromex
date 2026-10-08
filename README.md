@@ -104,7 +104,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 53 test |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 56 test |
 
 ---
 

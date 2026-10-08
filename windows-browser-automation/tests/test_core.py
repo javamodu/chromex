@@ -61,6 +61,14 @@ class AuditTests(TempEnvTestCase):
         self.assertNotIn("cok-gizli-token-123", str(rec["details"]))
         self.assertIn("***", rec["details"]["mesaj"])
 
+    def test_kuyruk_okuma_ile_seq_dogru(self):
+        # _last_hash tam tarama yerine kuyruk okur; seq yine de doğru artmalı.
+        for i in range(25):
+            rec = audit.log_event(f"e{i}", "test", "READ", "auto", {})
+        self.assertEqual(rec["seq"], 25)
+        ok, msg = audit.verify_chain()
+        self.assertTrue(ok, msg)
+
 
 class PolicyTests(TempEnvTestCase):
     def test_varsayilanlar(self):
@@ -139,6 +147,12 @@ class StoreTests(TempEnvTestCase):
         sadece_github = store.recent("github")
         self.assertEqual(len(sadece_github), 1)
         self.assertEqual(sadece_github[0][1], "github")
+
+    def test_limit_kelepcesi(self):
+        for i in range(3):
+            store.save("github", "repo", f"r{i}", "t", "c")
+        self.assertEqual(len(store.recent(limit=-5)), 1)    # alt sınır: 1
+        self.assertEqual(len(store.recent(limit=99999)), 3)  # üst sınır: 1000
 
 
 class _FakeResp:

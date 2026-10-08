@@ -57,21 +57,41 @@ def _record_hash(prev_hash: str, record_without_hash: dict) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _son_satir(path: Path, blok: int = 8192) -> str | None:
+    """Son boş-olmayan satırı dosyanın sonundan blok blok okuyarak bulur.
+
+    Tam tarama yerine kuyruk okuma: ekleme başına maliyet dosya boyuyla
+    değil, son satırın uzunluğuyla ölçeklenir (O(n) -> ~O(1)).
+    """
+    with path.open("rb") as fh:
+        fh.seek(0, 2)
+        konum = fh.tell()
+        tampon = b""
+        while konum > 0:
+            adim = min(blok, konum)
+            konum -= adim
+            fh.seek(konum)
+            tampon = fh.read(adim) + tampon
+            satirlar = tampon.split(b"\n")
+            # konum > 0 ise ilk parça yarım satırdır; atlanır.
+            adaylar = satirlar[1:] if konum > 0 else satirlar
+            for parca in reversed(adaylar):
+                if parca.strip():
+                    return parca.decode("utf-8")
+    return None
+
+
 def _last_hash(path: Path) -> tuple[str, int]:
     """Son hash + kayıt sayısı. Kilit altında çağrılır ve HER ZAMAN diskten
-    okur — süreç-içi önbellek başka bir sürecin eklediği kaydı kaçırırdı."""
+    okur — süreç-içi önbellek başka bir sürecin eklediği kaydı kaçırırdı.
+    Kayıt sayısı son kaydın seq alanından türetilir (tam tarama gerekmez)."""
     if not path.exists():
         return _GENESIS, 0
-    last_line, count = None, 0
-    with path.open(encoding="utf-8") as fh:
-        for line in fh:
-            if line.strip():
-                last_line = line
-                count += 1
+    last_line = _son_satir(path)
     if last_line is None:
         return _GENESIS, 0
-    return json.loads(last_line)["hash"], count
-
+    rec = json.loads(last_line)
+    return rec["hash"], int(rec.get("seq", 0))
 
 def log_event(
     event: str,

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 
-from core import audit, secrets, store
+from core import audit, oauth, secrets, store
 from core.http import request_json
 
 WORKER = "x"
@@ -59,32 +59,12 @@ def fetch_bookmarks(limit: int = 50) -> list[dict]:
 
 def refresh_access_token() -> str:
     """OAuth2 refresh (public/PKCE client). Yeni token'ları .env'e siz yazın."""
-    import requests
-
-    client_id = secrets.get("X_CLIENT_ID", required=True)
-    refresh = secrets.get("X_REFRESH_TOKEN", required=True)
-    resp = requests.post(
-        f"{API}/oauth2/token",
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": refresh,
-            "client_id": client_id,
-        },
-        timeout=30,
+    return oauth.refresh_access_token(
+        token_url=f"{API}/oauth2/token",
+        client_id=secrets.get("X_CLIENT_ID", required=True),
+        refresh_token=secrets.get("X_REFRESH_TOKEN", required=True),
+        out_file="data/x_tokens.env",
+        access_key="X_ACCESS_TOKEN",
+        refresh_key="X_REFRESH_TOKEN",
+        worker=WORKER,
     )
-    resp.raise_for_status()
-    data = resp.json()
-    audit.log_event("x_token_refreshed", WORKER, "READ", "auto",
-                    {"expires_in": data.get("expires_in")})
-    # Token terminale YAZILMAZ; gitignore kapsamındaki data/ altına kaydedilir.
-    from pathlib import Path
-
-    out = Path("data/x_tokens.env")
-    out.parent.mkdir(parents=True, exist_ok=True)
-    lines = [f"X_ACCESS_TOKEN={data.get('access_token', '')}"]
-    if data.get("refresh_token"):
-        lines.append(f"X_REFRESH_TOKEN={data['refresh_token']}")
-    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Yeni token(lar) {out} dosyasına yazıldı — değerleri .env'e taşıyıp "
-          "bu dosyayı silin.")
-    return data["access_token"]

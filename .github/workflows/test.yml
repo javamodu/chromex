@@ -17,6 +17,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Bagimliliklar
         run: pip install -r windows-browser-automation/requirements.txt
-      - name: Testler (53 adet, offline)
+      - name: Testler (56 adet, offline)
         working-directory: windows-browser-automation
         run: python -m unittest discover -s tests -v

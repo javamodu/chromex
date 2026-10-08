@@ -4,8 +4,9 @@ Ağ, gh CLI, Google API, Playwright ve gerçek token'lar gerekmez; hepsi
 mock'lanır. Kapsananlar:
 - github: gh/REST yolları, PR ayıklama, create_pr onayı
 - gmail: arama, taslak (göndermez), send_draft onayı
-- x: sayfalama, token yenileme (terminale basılmaz)
-- linkedin: userinfo, create_post onayı + gövde, görünürlük doğrulaması
+- x: sayfalama, token yenileme (ortak core/oauth; terminale basılmaz)
+- linkedin: userinfo, create_post onayı + gövde, görünürlük doğrulaması,
+  token yenileme
 - linkedin_browser: giriş doğrulamaları (tarayıcısız)
 - canva: async export akışı, failed durumu
 - supabase: PostgREST parametreleri, CLI mutasyon + bilinmeyen komut onayı,
@@ -225,6 +226,18 @@ class LinkedInWorkerTests(WorkerTestCase):
         from workers import linkedin_worker
         self.worker = linkedin_worker
 
+    def test_refresh_token_terminale_basilmaz(self):
+        resp = mock.Mock()
+        resp.json.return_value = {"access_token": "YENI-LI-TOKEN",
+                                  "expires_in": 5184000}
+        with mock.patch("requests.post", return_value=resp), \
+             redirect_stdout(io.StringIO()) as buf:
+            token = self.worker.refresh_access_token()
+        self.assertEqual(token, "YENI-LI-TOKEN")
+        self.assertNotIn("YENI-LI-TOKEN", buf.getvalue())
+        content = Path("data/linkedin_tokens.env").read_text(encoding="utf-8")
+        self.assertIn("LINKEDIN_ACCESS_TOKEN=YENI-LI-TOKEN", content)
+
     def test_me_profil_esler(self):
         with mock.patch.object(self.worker, "request_json", return_value={
                 "sub": "u1", "name": "Ada", "email": "a@b.c", "picture": "p"}):
@@ -441,6 +454,8 @@ class AuditBridgeParityTests(WorkerTestCase):
         import importlib.util
         path = (Path(self._cwd).parent
                 / "claude-code-automation" / "audit_bridge.py")
+        if not path.exists():
+            self.skipTest("claude-code-automation/audit_bridge.py bu ağaçta yok")
         spec = importlib.util.spec_from_file_location("audit_bridge", path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

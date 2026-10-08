@@ -46,6 +46,8 @@ def save(source: str, kind: str, ref: str | None, title: str | None,
 
 
 def recent(source: str | None = None, limit: int = 20) -> list[tuple]:
+    # Kelepçe: negatif/sıfır/şaşkın limitler DB'yi yormasın diye 1..1000.
+    limit = max(1, min(int(limit), 1000))
     with closing(_connect()) as conn:
         if source:
             cur = conn.execute(

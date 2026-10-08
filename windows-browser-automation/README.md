@@ -137,7 +137,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-53 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+56 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
 linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
 Playwright gerektirmez, offline çalışır.
@@ -146,12 +146,12 @@ Playwright gerektirmez, offline çalışır.
 
 | Parça | Satır |
 |---|---|
-| core/ (secrets, audit, policy, approval, store, http, log) | 536 |
-| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 857 |
+| core/ (secrets, audit, policy, approval, store, http, log, oauth) | 613 |
+| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 818 |
 | orchestrator/cli.py (registry desenli) | 260 |
-| tests/ | 722 |
+| tests/ | 751 |
 | blender/ | 47 |
-| Python toplam | **2.422** |
+| Python toplam | **2.489** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 178 |
 
 ## Bilinen sadeleştirmeler

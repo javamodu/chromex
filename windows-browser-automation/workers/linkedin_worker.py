@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import json
 
-from core import audit, secrets, store
+from core import audit, oauth, secrets, store
 from core.approval import ActionRequest, require
 from core.http import request_json
 
@@ -104,32 +104,13 @@ def refresh_access_token() -> str:
     Yeni token'lar gitignore kapsamındaki data/linkedin_tokens.env dosyasına
     yazılır; terminale BASILMAZ. Değerleri .env'e taşıyıp dosyayı silin.
     """
-    import requests
-    from pathlib import Path
-
-    client_id = secrets.get("LINKEDIN_CLIENT_ID", required=True)
-    client_secret = secrets.get("LINKEDIN_CLIENT_SECRET", required=True)
-    refresh = secrets.get("LINKEDIN_REFRESH_TOKEN", required=True)
-    resp = requests.post(
-        "https://www.linkedin.com/oauth/v2/accessToken",
-        data={
-            "grant_type": "refresh_token",
-            "refresh_token": refresh,
-            "client_id": client_id,
-            "client_secret": client_secret,
-        },
-        timeout=30,
+    return oauth.refresh_access_token(
+        token_url="https://www.linkedin.com/oauth/v2/accessToken",
+        client_id=secrets.get("LINKEDIN_CLIENT_ID", required=True),
+        client_secret=secrets.get("LINKEDIN_CLIENT_SECRET", required=True),
+        refresh_token=secrets.get("LINKEDIN_REFRESH_TOKEN", required=True),
+        out_file="data/linkedin_tokens.env",
+        access_key="LINKEDIN_ACCESS_TOKEN",
+        refresh_key="LINKEDIN_REFRESH_TOKEN",
+        worker=WORKER,
     )
-    resp.raise_for_status()
-    data = resp.json()
-    audit.log_event("linkedin_token_refreshed", WORKER, "READ", "auto",
-                    {"expires_in": data.get("expires_in")})
-    out = Path("data/linkedin_tokens.env")
-    out.parent.mkdir(parents=True, exist_ok=True)
-    lines = [f"LINKEDIN_ACCESS_TOKEN={data.get('access_token', '')}"]
-    if data.get("refresh_token"):
-        lines.append(f"LINKEDIN_REFRESH_TOKEN={data['refresh_token']}")
-    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Yeni token(lar) {out} dosyasına yazıldı — değerleri .env'e taşıyıp "
-          "bu dosyayı silin.")
-    return data["access_token"]

@@ -17,7 +17,7 @@ Katman 4  Görsel (ops.)  → npx vibe-kanban
 
 | Dosya | Rol |
 |---|---|
-| `ralph.sh` | Ana döngü: taze context ile ajanı tekrar tekrar çağırır (Reçete C) |
+| `ralph.sh` | Ana döngü: taze context ile ajanı tekrar tekrar çağırır (Reçete C). Not: 2026 itibarıyla native `/goal` (Reçete A) önceliklidir; ralph.sh eski sürümler ve Codex gibi başka ajanlar için yedek yoldur |
 | `audit_bridge.py` | Koşu olaylarını Plan 2 uyumlu SHA-256 hash zincirine yazar (stdlib-only) |
 | `PLAN.md` | İşaretlenebilir alt görev listesi — döngünün hafızası |
 | `PROMPT.md` | Ajanın her turdaki kuralları: tek madde, sorma-varsay, yıkıcı işlem yok |
