@@ -13,7 +13,8 @@ Hızlı kullanım:
         details={"konu": "Teklif", "boyut": "2.1 KB"},
     ))
 """
-from .approval import ActionRequest, ApprovalDenied, require
+from .approval import (ActionRequest, ApprovalChannel, ApprovalDenied,
+                       TerminalChannel, WebhookChannel, require, set_channel)
 from .audit import log_event, verify_chain
 from .policy import DEFAULT_POLICY, decision_for, load
 
@@ -21,6 +22,7 @@ __version__ = "0.1.0"
 
 __all__ = [
     "ActionRequest", "ApprovalDenied", "require",
+    "ApprovalChannel", "TerminalChannel", "WebhookChannel", "set_channel",
     "log_event", "verify_chain",
     "DEFAULT_POLICY", "decision_for", "load",
     "__version__",

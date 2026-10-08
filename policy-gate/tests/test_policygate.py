@@ -12,8 +12,10 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from policygate import audit, policy, secrets
-from policygate.approval import ActionRequest, ApprovalDenied, require
+from policygate import approval, audit, policy, secrets
+from policygate.approval import (ActionRequest, ApprovalDenied,
+                                 TerminalChannel, WebhookChannel, require,
+                                 set_channel)
 
 
 class TempEnvTestCase(unittest.TestCase):
@@ -132,6 +134,67 @@ class ApprovalTests(TempEnvTestCase):
              mock.patch("builtins.input", return_value="evet"):
             with self.assertRaises(ApprovalDenied):
                 require(self._req("SEND"))
+
+
+class _FakeChannel:
+    def __init__(self, cevap: bool) -> None:
+        self.cevap = cevap
+        self.istekler: list = []
+
+    def ask(self, req):
+        self.istekler.append(req)
+        return self.cevap
+
+
+class KanalTests(TempEnvTestCase):
+    """v0.3: onay kanalı soyutlaması (webhook/bot köprüleri)."""
+
+    def tearDown(self) -> None:
+        set_channel(TerminalChannel())  # kanalı sıfırla
+        super().tearDown()
+
+    def _req(self, level: str) -> ActionRequest:
+        return ActionRequest(worker="test", action="test.islem", level=level,
+                             summary="test")
+
+    def test_kanal_flag_olmadan_etkilesimsizde_sorulmaz(self):
+        kanal = _FakeChannel(True)
+        set_channel(kanal)  # allow_non_interactive=False (varsayılan)
+        fake_stdin = mock.MagicMock()
+        fake_stdin.isatty.return_value = False
+        with mock.patch("policygate.approval.sys.stdin", fake_stdin):
+            with self.assertRaises(ApprovalDenied):
+                require(self._req("SEND"))
+        self.assertEqual(kanal.istekler, [])  # kanal hiç çağrılmadı
+
+    def test_kanal_flag_ile_etkilesimsizde_sorulur(self):
+        kanal = _FakeChannel(True)
+        set_channel(kanal, allow_non_interactive=True)
+        fake_stdin = mock.MagicMock()
+        fake_stdin.isatty.return_value = False
+        with mock.patch("policygate.approval.sys.stdin", fake_stdin):
+            require(self._req("SEND"))  # fırlatmamalı
+        self.assertEqual(len(kanal.istekler), 1)
+
+    def test_kanal_redderse_denied(self):
+        set_channel(_FakeChannel(False), allow_non_interactive=True)
+        fake_stdin = mock.MagicMock()
+        fake_stdin.isatty.return_value = False
+        with mock.patch("policygate.approval.sys.stdin", fake_stdin):
+            with self.assertRaises(ApprovalDenied):
+                require(self._req("MODIFY"))
+
+    def test_webhook_approve_true_onaylar(self):
+        kanal = WebhookChannel("https://ornek.test/onay")
+        yanit = mock.MagicMock()
+        yanit.__enter__.return_value.read.return_value = b'{"approve": true}'
+        with mock.patch("urllib.request.urlopen", return_value=yanit):
+            self.assertTrue(kanal.ask(self._req("SEND")))
+
+    def test_webhook_hata_verirse_red(self):
+        kanal = WebhookChannel("https://ornek.test/onay", timeout=1)
+        with mock.patch("urllib.request.urlopen", side_effect=OSError("kapalı")):
+            self.assertFalse(kanal.ask(self._req("SEND")))
 
 
 if __name__ == "__main__":
