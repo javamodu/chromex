@@ -23,3 +23,9 @@ Homepage = "https://example.invalid/policygate"  # TODO: yayın öncesi gerçek 
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.optional-dependencies]
+http = ["requests>=2.31"]
+
+[tool.setuptools.package-data]
+policygate = ["py.typed"]

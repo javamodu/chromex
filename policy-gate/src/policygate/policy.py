@@ -26,6 +26,9 @@ DEFAULT_POLICY: dict = {
     "always_deny": [],
 }
 
+_GECERLI_SEVIYELER = {"READ", "DRAFT", "SEND", "MODIFY", "DELETE"}
+_GECERLI_MODLAR = {"auto", "ask", "deny"}
+
 
 def _policy_path() -> Path:
     return Path(os.environ.get("POLICY_FILE", "config/policy.json"))
@@ -45,11 +48,40 @@ def load() -> dict:
         _log.warning("policy bir nesne değil — güvenli varsayılanlar devrede")
         return json.loads(json.dumps(DEFAULT_POLICY))
     merged = json.loads(json.dumps(DEFAULT_POLICY))
-    merged.update({k: v for k, v in data.items() if k != "levels"})
+    # Bilinmeyen üst seviye anahtarlar ileri-uyumluluk için korunur;
+    # bilinen üç anahtar şema doğrulamasından geçer (bozuk alan atlanır).
+    merged.update({k: v for k, v in data.items()
+                   if k not in {"levels", "non_interactive_default",
+                                "always_deny"}})
+    _dogrula(data, merged)
+    return merged
+
+
+def _dogrula(data: dict, merged: dict) -> None:
+    """Şema doğrulaması: geçersiz alanlar uyarıyla atlanır, kalanı uygulanır."""
     levels = data.get("levels")
     if isinstance(levels, dict):
-        merged["levels"].update(levels)
-    return merged
+        for ad, mod in levels.items():
+            if str(ad).upper() in _GECERLI_SEVIYELER \
+                    and str(mod).lower() in _GECERLI_MODLAR:
+                merged["levels"][str(ad).upper()] = str(mod).lower()
+            else:
+                _log.warning("policy.levels: geçersiz girdi atlandı: %r=%r",
+                             ad, mod)
+    nid = data.get("non_interactive_default")
+    if nid is not None:
+        if str(nid).lower() in {"auto", "deny"}:
+            merged["non_interactive_default"] = str(nid).lower()
+        else:
+            _log.warning("non_interactive_default geçersiz (%r) — 'deny' "
+                         "varsayılıyor", nid)
+    ad = data.get("always_deny")
+    if ad is None:
+        pass
+    elif isinstance(ad, list) and all(isinstance(x, str) for x in ad):
+        merged["always_deny"] = ad
+    else:
+        _log.warning("always_deny str listesi değil — yok sayıldı")
 
 
 def decision_for(level: str, action_name: str, policy: dict | None = None) -> str:

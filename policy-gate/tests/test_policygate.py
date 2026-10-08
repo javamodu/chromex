@@ -91,6 +91,25 @@ class PolicyTests(TempEnvTestCase):
         self.assertEqual(pol, policy.DEFAULT_POLICY)
         self.assertEqual(policy.decision_for("DELETE", "x", pol), "ask")
 
+    def test_sema_gecersiz_girdiler_atlanir(self):
+        Path(os.environ["POLICY_FILE"]).write_text(json.dumps(
+            {"levels": {"SEND": "auto", "HACK": "auto", "READ": "ucur"}}),
+            encoding="utf-8")
+        pol = policy.load()
+        self.assertEqual(pol["levels"]["SEND"], "auto")   # geçerli uygulanır
+        self.assertNotIn("HACK", pol["levels"])           # bilinmeyen seviye
+        self.assertEqual(pol["levels"]["READ"], "auto")   # "ucur" atlandı
+
+    def test_sema_non_interactive_default_dogrulamasi(self):
+        Path(os.environ["POLICY_FILE"]).write_text(
+            json.dumps({"non_interactive_default": "belki"}), encoding="utf-8")
+        self.assertEqual(policy.load()["non_interactive_default"], "deny")
+
+    def test_sema_always_deny_liste_degilse_yok_sayilir(self):
+        Path(os.environ["POLICY_FILE"]).write_text(
+            json.dumps({"always_deny": "hepsi"}), encoding="utf-8")
+        self.assertEqual(policy.load()["always_deny"], [])
+
 
 class ApprovalTests(TempEnvTestCase):
     def _req(self, level: str) -> ActionRequest:
