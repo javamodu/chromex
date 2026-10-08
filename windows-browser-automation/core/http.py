@@ -4,7 +4,9 @@
   token'lar ASLA loglanmaz).
 - 429 / 5xx / ağ hatalarında üstel geri çekilme + jitter ile yeniden dener
   (varsayılan 3 tekrar; Retry-After başlığına saygı duyar, bekleme <= 60 sn).
-- Diğer 4xx durumlarında kısa gövdeyle HttpError fırlatır (retry edilmez).
+- Diğer 4xx durumlarında kısa gövdeyle HttpError fırlatır (retry edilmez);
+  gövde metni secrets.redact ile maskelenir.
+- 2xx gelip gövde JSON değilse HttpError fırlatır (sessiz hata yok).
 
 Not: Yeniden deneme mutasyon uçlarında da çalışır; idempotent OLMAYAN bir
 POST çağırıyorsanız max_retries=0 geçin.
@@ -17,7 +19,7 @@ from typing import Any
 
 import requests
 
-from . import audit
+from . import audit, secrets
 from .log import get as _get_logger
 
 _log = _get_logger("http")
@@ -88,9 +90,19 @@ def request_json(
         if resp.status_code >= 400:
             raise HttpError(
                 f"{method.upper()} {url} -> {resp.status_code} "
-                f"({attempt + 1} deneme): {resp.text[:300]}")
+                f"({attempt + 1} deneme): {secrets.redact(resp.text[:300])}")
 
+        if not resp.content:
+            return resp  # 204 No Content vb. gövdesiz başarı
         content_type = resp.headers.get("Content-Type", "")
-        if resp.content and "json" in content_type:
+        if "json" not in content_type.lower():
+            raise HttpError(
+                f"{method.upper()} {url} -> {resp.status_code} ama gövde JSON "
+                f"değil (Content-Type: {content_type or 'yok'}): "
+                f"{secrets.redact(resp.text[:200])}")
+        try:
             return resp.json()
-        return resp
+        except ValueError as exc:
+            raise HttpError(
+                f"{method.upper()} {url} -> geçersiz JSON gövdesi: "
+                f"{secrets.redact(resp.text[:200])}") from exc

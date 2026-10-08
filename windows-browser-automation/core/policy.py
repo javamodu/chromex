@@ -1,13 +1,18 @@
 """Yetki policy'si: hangi seviye otomatik, hangisi onaya tabi.
 
-config/policy.json dosyasından okunur; dosya yoksa güvenli varsayılanlar
-kullanılır. DELETE seviyesi config ne derse desin asla "auto" olamaz.
+config/policy.json dosyasından okunur; dosya yoksa VEYA bozuksa güvenli
+varsayılanlar kullanılır (fail-safe). DELETE seviyesi config ne derse desin
+asla "auto" olamaz.
 """
 from __future__ import annotations
 
 import json
 import os
 from pathlib import Path
+
+from .log import get as _get_logger
+
+_log = _get_logger("policy")
 
 DEFAULT_POLICY: dict = {
     "levels": {
@@ -27,13 +32,23 @@ def _policy_path() -> Path:
 
 
 def load() -> dict:
+    """Policy'yi oku; bozuk/eksik dosyada güvenli varsayılanlara düş (fail-safe)."""
     path = _policy_path()
     if not path.exists():
         return json.loads(json.dumps(DEFAULT_POLICY))  # kopya
-    data = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _log.warning("policy okunamadı (%s) — güvenli varsayılanlar devrede", exc)
+        return json.loads(json.dumps(DEFAULT_POLICY))
+    if not isinstance(data, dict):
+        _log.warning("policy bir nesne değil — güvenli varsayılanlar devrede")
+        return json.loads(json.dumps(DEFAULT_POLICY))
     merged = json.loads(json.dumps(DEFAULT_POLICY))
     merged.update({k: v for k, v in data.items() if k != "levels"})
-    merged["levels"].update(data.get("levels", {}))
+    levels = data.get("levels")
+    if isinstance(levels, dict):
+        merged["levels"].update(levels)
     return merged
 
 

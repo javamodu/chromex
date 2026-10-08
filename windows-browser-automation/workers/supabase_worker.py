@@ -5,8 +5,9 @@
   MODIFY seviyesinde onaya tabidir.
 
 Güvenlik: SUPABASE_SERVICE_ROLE_KEY yalnızca sunucu tarafında (env) durur;
-tarayıcıya, log'a veya örnek dosyalara asla yazılmaz. Agent tarafında
-resmi Supabase MCP'nin --read-only modu tercih edilir (bkz. config/).
+tarayıcıya, log'a veya örnek dosyalara asla yazılmaz. Salt-okunur sorgularda
+en az yetki ilkesiyle ANON KEY önceliklidir (RLS devrede kalır). Agent
+tarafında resmi Supabase MCP'nin --read-only modu tercih edilir (bkz. config/).
 """
 from __future__ import annotations
 
@@ -19,13 +20,18 @@ from core.http import request_json
 
 WORKER = "supabase"
 _MUTATING = {"push", "deploy", "reset", "delete", "unlink", "restore", "seed"}
+# Fail-closed: bilinen salt-okunur alt komutlardan biri yoksa komut onaya düşer;
+# böylece CLI'ye sonradan eklenen tehlikeli komutlar sessizce geçemez.
+_READONLY = {"status", "version", "help", "list", "diff", "inspect"}
 
 
 def query_table(table: str, select: str = "*", limit: int = 20,
                 filters: dict[str, str] | None = None) -> list[dict]:
     base = secrets.get("SUPABASE_URL", required=True).rstrip("/")
-    key = secrets.get("SUPABASE_SERVICE_ROLE_KEY") or secrets.get(
-        "SUPABASE_ANON_KEY", required=True)
+    # En az yetki: salt-okunur sorguda anon key öncelikli; service_role
+    # yalnızca anon tanımlı değilse kullanılır.
+    key = secrets.get("SUPABASE_ANON_KEY") or secrets.get(
+        "SUPABASE_SERVICE_ROLE_KEY", required=True)
     audit.log_event("supabase_query", WORKER, "READ", "auto",
                     {"table": table, "select": select, "limit": limit})
     params: dict[str, str] = {"select": select, "limit": str(limit)}
@@ -43,10 +49,12 @@ def cli(args: list[str]) -> str:
     if shutil.which("supabase") is None:
         raise RuntimeError("supabase CLI kurulu değil (npm i -g supabase).")
     komut = "supabase " + " ".join(args)
-    if _MUTATING & set(args):
+    kelimeler = set(args)
+    salt_okunur = bool(kelimeler & _READONLY) and not kelimeler & _MUTATING
+    if not salt_okunur:
         require(ActionRequest(
             worker=WORKER, action="supabase.cli", level="MODIFY",
-            summary="Supabase CLI ile DEĞİŞTİRİCİ işlem çalıştırılacak.",
+            summary="Supabase CLI ile DEĞİŞTİRİCİ/tanınmayan işlem çalıştırılacak.",
             details={"komut": komut},
         ))
     else:

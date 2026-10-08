@@ -13,7 +13,7 @@ Agent / sen
    ├─ Playwright CLI (0 satır kod) ── tekrarlanabilir tarayıcı akışları
    └─ python -m orchestrator.cli ── API worker'ları
                 │
-                ├─ workers/  github · gmail · x · linkedin · canva · supabase · vercel
+                ├─ workers/  github · gmail · x · linkedin (API + tarayıcı) · canva · supabase · vercel
                 ├─ core/     policy → onay kapısı → audit zinciri → SQLite depo
                 └─ blender/  bpy örneği
 ```
@@ -137,7 +137,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-46 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+53 test; onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
 linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
 Playwright gerektirmez, offline çalışır.
@@ -146,12 +146,12 @@ Playwright gerektirmez, offline çalışır.
 
 | Parça | Satır |
 |---|---|
-| core/ (secrets, audit, policy, approval, store, http, log) | 498 |
-| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 847 |
+| core/ (secrets, audit, policy, approval, store, http, log) | 536 |
+| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 857 |
 | orchestrator/cli.py (registry desenli) | 260 |
-| tests/ | 651 |
+| tests/ | 722 |
 | blender/ | 47 |
-| Python toplam | **2.303** |
+| Python toplam | **2.422** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 178 |
 
 ## Bilinen sadeleştirmeler

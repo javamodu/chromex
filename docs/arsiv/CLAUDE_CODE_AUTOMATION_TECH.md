@@ -1,3 +1,7 @@
+> ⚠️ ARŞİV (2026-10-08): Bu dosya ilk sürümün tarihsel teknik envanteridir; güncel durum için kök README.md ve ilgili dizinin README'sine bakın.
+
+---
+
 # Claude Code Otomasyonu - Teknoloji Detayları
 
 ## 🎯 Ne Yapar?

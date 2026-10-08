@@ -29,7 +29,9 @@ if (-not (Test-Path $chrome)) {
     exit 1
 }
 
-& $chrome --remote-debugging-port=$Port --user-data-dir="$userDataDir"
+# Start-Process ile arka planda baslat: "&" cagrisi Chrome kapanana dek
+# script'i kilitler ve asagidaki bilgi mesajlari asla gorunmezdi.
+Start-Process -FilePath $chrome -ArgumentList "--remote-debugging-port=$Port", "--user-data-dir=`"$userDataDir`""
 
 Write-Host ""
 Write-Host "Chrome baslatildi:"

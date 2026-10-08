@@ -5,7 +5,8 @@ Dış etki yaratan her işlem (SEND/MODIFY/DELETE) buradan geçer:
 2) "ask" ise işlemin TAM detayı (alıcı, konu, komut...) kullanıcıya gösterilir,
 3) yalnızca birebir 'EVET' yanıtı onay sayılır,
 4) her karar audit zincirine yazılır,
-5) etkileşimsiz (pipe/cron) oturumda varsayılan karar RED'dir.
+5) etkileşimsiz (pipe/cron) oturumda varsayılan karar RED'dir; SEND ve
+   DELETE seviyesi non_interactive_default ne olursa olsun HER ZAMAN reddedilir.
 """
 from __future__ import annotations
 
@@ -65,6 +66,16 @@ def require(req: ActionRequest) -> None:
 
     # mode == "ask"
     if not sys.stdin.isatty():
+        if req.level.upper() in {"SEND", "DELETE"}:
+            # Kritik seviyeler etkileşimsiz oturumda asla otomatik onaylanmaz;
+            # non_interactive_default="auto" bile bunu geçemez.
+            audit.log_event("action_non_interactive", req.worker, req.level,
+                            "deny", {"action": req.action,
+                                     "neden": "kritik_seviye_etkilesimsiz"})
+            raise ApprovalDenied(
+                f"Etkileşimsiz oturumda {req.level} seviyesi her zaman "
+                f"reddedilir: {req.action}"
+            )
         default = str(pol.get("non_interactive_default", "deny")).lower()
         audit.log_event("action_non_interactive", req.worker, req.level, default,
                         {"action": req.action})

@@ -72,4 +72,5 @@ def cancel_deployment(deployment_id: str) -> dict:
     ))
     return request_json(
         "PATCH", f"{API}/v12/deployments/{deployment_id}/cancel", WORKER,
-        headers=_headers(), params=_team_params(), level="MODIFY")
+        headers=_headers(), params=_team_params(), level="MODIFY",
+        max_retries=0)  # iptal mutasyonu tekrar denenmez

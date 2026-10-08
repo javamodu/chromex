@@ -12,7 +12,8 @@ winget install --id GitHub.cli -e --accept-source-agreements --accept-package-ag
 
 Write-Host "== Python bagimliliklari =="
 python -m pip install --upgrade pip
-python -m pip install -r ..\requirements.txt
+# Script nereden cagrilirsa cagrilsin paket kokundeki requirements'i bulur:
+python -m pip install -r "$PSScriptRoot\..\requirements.txt"
 
 Write-Host ""
 Write-Host "Kurulum bitti. Sonraki adimlar:"

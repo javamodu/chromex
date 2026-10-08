@@ -18,7 +18,7 @@ chromex/
 └── windows-browser-automation/      → Windows/Browser otomasyonu
     ├── README.md
     ├── core/                        → approval, audit, policy, http, secrets, store, log
-    ├── workers/                     → github, gmail, x, linkedin, canva, supabase, vercel
+    ├── workers/                     → github, gmail, x, linkedin (API + CDP okuyucu), canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
     ├── tests/                       → 46 birim test (core + worker + parite, offline)
     ├── config/                      → policy.json, .env.example, MCP config
@@ -104,7 +104,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 6 worker + CLI + 16 test |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + 53 test |
 
 ---
 
@@ -118,7 +118,7 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
-**Sürüm:** 1.0.1  
+**Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
-**Güncelleme:** 2026-09-27  
+**Güncelleme:** 2026-10-08  
 **Durum:** İki sistem de çalışır durumda

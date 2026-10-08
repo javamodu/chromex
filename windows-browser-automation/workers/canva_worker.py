@@ -34,7 +34,7 @@ def export_design(design_id: str, fmt: str = "pdf",
     job = request_json(
         "POST", f"{API}/exports", WORKER, headers=_headers(),
         json_body={"design_id": design_id, "format": {"type": fmt}},
-        level="DRAFT",
+        level="DRAFT", max_retries=0,  # her deneme yeni job açar (idempotent değil)
     )
     job_id = job["job"]["id"]
 

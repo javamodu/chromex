@@ -8,7 +8,8 @@ mock'lanır. Kapsananlar:
 - linkedin: userinfo, create_post onayı + gövde, görünürlük doğrulaması
 - linkedin_browser: giriş doğrulamaları (tarayıcısız)
 - canva: async export akışı, failed durumu
-- supabase: PostgREST parametreleri, CLI mutasyon onayı
+- supabase: PostgREST parametreleri, CLI mutasyon + bilinmeyen komut onayı,
+  anon key önceliği
 - vercel: listeleme, cancel onayı
 - orchestrator.cli: audit-dogrula, son-kayitlar
 
@@ -342,6 +343,29 @@ class SupabaseWorkerTests(WorkerTestCase):
             out = self.worker.cli(["status"])
         require_mock.assert_not_called()
         self.assertEqual(out, "ok")
+
+    def test_cli_bilinmeyen_komut_onay_ister(self):
+        # Fail-closed: salt-okunur listesinde olmayan komut MODIFY sayılır.
+        with mock.patch.object(self.worker.shutil, "which",
+                               return_value="/usr/bin/supabase"), \
+             mock.patch.object(self.worker, "require",
+                               side_effect=ApprovalDenied("red")) as req_mock, \
+             mock.patch.object(self.worker.subprocess, "run") as run:
+            with self.assertRaises(ApprovalDenied):
+                self.worker.cli(["gen", "types"])
+        req_mock.assert_called_once()
+        run.assert_not_called()
+
+    def test_query_anon_key_oncelikli(self):
+        os.environ["SUPABASE_SERVICE_ROLE_KEY"] = "test-service-role"
+        try:
+            with mock.patch.object(self.worker, "request_json",
+                                   return_value=[]) as req:
+                self.worker.query_table("tablo")
+        finally:
+            os.environ.pop("SUPABASE_SERVICE_ROLE_KEY", None)
+        self.assertEqual(req.call_args.kwargs["headers"]["apikey"],
+                         "test-supabase_anon_key")
 
 
 class VercelWorkerTests(WorkerTestCase):

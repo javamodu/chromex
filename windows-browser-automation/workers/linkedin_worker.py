@@ -14,8 +14,9 @@ using OpenID Connect" ve "Share on LinkedIn" ürünlerini ekleyin, OAuth2
 KAPSAM (dürüst not): Self-serve API yalnızca kendi profilinizi okumaya
 (userinfo) ve kendi adınıza paylaşım yapmaya (w_member_social) izin verir.
 Akış okuma, kişi arama ve başkasının içeriğini çekme resmi API'de YOKTUR;
-tarayıcıyla scraping LinkedIn kullanım koşullarına aykırıdır ve bu depo
-bilinçli olarak içermez (X worker'ındaki yaklaşımın aynısı).
+bu işler açık oturumdan SALT-OKUNUR tarayıcı okuyucuyla yapılır
+(linkedin_browser.py, CDP üzerinden) — bilinçli risk kararı ve sınırlar
+o dosyanın modül başlığında belgelenmiştir.
 
 UGC API taslak desteklemez; paylaşım doğrudan YAYINLANIR, bu yüzden SEND
 seviyesinde onay kapısından geçer (geri alma yoktur, yalnızca silinebilir).

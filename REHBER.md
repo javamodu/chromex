@@ -163,11 +163,12 @@ with sync_playwright() as p:
     browser = p.chromium.connect_over_cdp("http://localhost:9222")
     page = browser.contexts[0].pages[0]
     
-    # X'e git (zaten oturum açık)    page.goto("https://x.com")
+    # X'e git (zaten oturum açık)
+    page.goto("https://x.com")
     page.fill('[data-testid="SearchBox_Search_Input"]', "AI agents")
     page.keyboard.press("Enter")
     page.wait_for_selector('[data-testid="tweet"]')
-
+```
 
 ---
 
@@ -242,5 +243,3 @@ with sync_playwright() as p:
 | **Tüm Use Case'ler** | Python Stack | Robot Framework | UiPath (ücretli) |
 
 **SONUÇ:** **API-First + Playwright (tarayıcı) + pywinauto (desktop)** kombinasyonu ile 150-500 satırda tüm use case'leri %85-95 güvenilirlikle çözebilirsin.
-
-

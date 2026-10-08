@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 import unittest
@@ -75,6 +76,15 @@ class PolicyTests(TempEnvTestCase):
         self.assertEqual(policy.decision_for("READ", "tehlikeli.islem", pol),
                          "deny")
 
+    def test_bozuk_json_guvenli_varsayilana_duser(self):
+        dosya = Path(os.environ["POLICY_FILE"])
+        dosya.write_text("{bozuk json...", encoding="utf-8")
+        self.assertEqual(policy.load(), policy.DEFAULT_POLICY)
+        dosya.write_text("[1, 2, 3]", encoding="utf-8")
+        pol = policy.load()
+        self.assertEqual(pol, policy.DEFAULT_POLICY)
+        self.assertEqual(policy.decision_for("DELETE", "x", pol), "ask")
+
 
 class ApprovalTests(TempEnvTestCase):
     def _req(self, level: str) -> ActionRequest:
@@ -92,6 +102,17 @@ class ApprovalTests(TempEnvTestCase):
         with mock.patch("core.approval.sys.stdin", fake_stdin):
             with self.assertRaises(ApprovalDenied):
                 require(self._req("SEND"))
+
+    def test_etkilesimsiz_kritik_seviye_auto_ayarinda_bile_reddedilir(self):
+        Path(os.environ["POLICY_FILE"]).write_text(
+            json.dumps({"non_interactive_default": "auto"}), encoding="utf-8")
+        fake_stdin = mock.MagicMock()
+        fake_stdin.isatty.return_value = False
+        with mock.patch("core.approval.sys.stdin", fake_stdin):
+            for seviye in ("SEND", "DELETE"):
+                with self.assertRaises(ApprovalDenied, msg=seviye):
+                    require(self._req(seviye))
+            require(self._req("MODIFY"))  # MODIFY'de auto ayarı geçerli kalır
 
     def test_kullanici_evet_derse_gecer(self):
         fake_stdin = mock.MagicMock()
@@ -209,6 +230,32 @@ class HttpRetryTests(TempEnvTestCase):
         self.queue[:] = [_FakeResp(429, retry_after="7"), _FakeResp(200, {})]
         self.http.request_json("GET", "https://x/a", "test")
         self._sleep.assert_called_once_with(7.0)
+
+    def test_json_olmayan_2xx_hata_verir(self):
+        resp = _FakeResp(200)
+        resp.headers = {"Content-Type": "text/html"}
+        self.queue[:] = [resp]
+        with self.assertRaises(self.http.HttpError):
+            self.http.request_json("GET", "https://x/a", "test")
+
+    def test_govdesiz_2xx_ham_yanit_dondurur(self):
+        resp = _FakeResp(204)
+        resp.content = b""
+        self.queue[:] = [resp]
+        self.assertIs(self.http.request_json("DELETE", "https://x/a", "test"),
+                      resp)
+
+    def test_hata_govdesinde_secret_maskelenir(self):
+        os.environ["HTTP_TEST_TOKEN"] = "super-gizli-deger-9"
+        secrets.get("HTTP_TEST_TOKEN")
+        resp = _FakeResp(500)
+        resp.text = "sunucu hatasi: super-gizli-deger-9 sizdi"
+        resp.content = resp.text.encode()
+        self.queue[:] = [resp]
+        with self.assertRaises(self.http.HttpError) as ctx:
+            self.http.request_json("GET", "https://x/a", "test", max_retries=0)
+        self.assertNotIn("super-gizli-deger-9", str(ctx.exception))
+        self.assertIn("***", str(ctx.exception))
 
 
 if __name__ == "__main__":
