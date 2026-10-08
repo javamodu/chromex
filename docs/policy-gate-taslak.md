@@ -64,7 +64,10 @@ onayı (webhook/Slack onayı yol haritasında).
 
 Kalan MANUEL adımlar (hesap/izin gerektirir):
 1. ~~Paket adı kontrolü~~ ✅ `policygate` doluydu → `policy-gate` alındı (müsait)
-2. PyPI projesinde bu repo + publish-policygate.yml + "pypi" environment
-   ile trusted publisher tanımı (pending publisher: proje adı policy-gate)
+2. PyPI'da trusted publisher tanımı (pypi.org → Account Settings → Publishing
+   → "Add a new pending publisher"): proje adı `policy-gate`, owner `javamodu`,
+   repo `chromex`, workflow `publish-policygate.yml`, environment `pypi`
+   (GitHub tarafı hazır: repo public, `pypi` environment oluşturuldu)
 3. ~~pyproject.toml'a gerçek repo URL'si~~ ✅ javamodu/chromex
-4. GitHub Release aç → otomatik yayın
+4. `gh release create v1.0.0` → workflow otomatik yayınlar (veya Actions'tan
+   elle: workflow_dispatch)
