@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "policygate"
+name = "policy-gate"  # PyPI'da "policygate" dolu; import adı policygate kalır
 version = "1.0.0"
 description = "AI ajanları için sıfır-bağımlılıklı onay kapısı + SHA-256 audit zinciri (stdlib-only)"
 readme = "README.md"
@@ -20,6 +20,9 @@ classifiers = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.urls]
+Homepage = "https://github.com/javamodu/chromex"
 
 [project.optional-dependencies]
 http = ["requests>=2.31"]

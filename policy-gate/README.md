@@ -1,5 +1,7 @@
 # policygate
 
+> Paket adı (PyPI): **policy-gate** · import adı: `policygate`
+
 AI ajanları ve otomasyon betikleri için **onay kapısı + audit zinciri** —
 tek dosyalık kopyala-yapıştır güvenlik yerine, pip ile kurulan küçük bir
 kütüphane. Sıfır bağımlılık: yalnızca Python standart kütüphanesi.
@@ -87,7 +89,7 @@ Webhook yanıtı JSON `{"approve": true}` olmalı; ağ hatası red sayılır
 
 ## Opsiyonel HTTP yardımcısı
 
-`pip install "policygate[http]"` → retry/backoff + secret maskeli hatalar
+`pip install "policy-gate[http]"` → retry/backoff + secret maskeli hatalar
 üreten `policygate.http.request_json` kullanılabilir (requests ister).
 
 ## Durum

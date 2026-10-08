@@ -6,6 +6,7 @@ name: policygate-yayin
 on:
   release:
     types: [published]
+  workflow_dispatch:  # trusted publisher kurulumu sonrası elle tetikleme
 
 jobs:
   build-publish:

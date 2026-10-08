@@ -54,7 +54,7 @@ def request_json(
 ) -> Any:
     if requests is None:
         raise RuntimeError(
-            "requests kurulu değil — pip install 'policygate[http]' ile kurun.")
+            "requests kurulu değil — pip install 'policy-gate[http]' ile kurun.")
     attempt = 0
     while True:
         try:

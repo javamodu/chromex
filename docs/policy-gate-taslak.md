@@ -11,7 +11,7 @@ onay kapısı + policy + audit zinciri + secret redaksiyonu. Bu çekirdek
 `windows-browser-automation/core/` içinde gömülü; başka projelerin kullanması
 için kopyala-yapıştır gerekiyor. Paketleşirse:
 
-1. Her ajan projesi `pip install policygate` ile aynı güvenlik katmanını alır.
+1. Her ajan projesi `pip install policy-gate` ile aynı güvenlik katmanını alır.
 2. Zincir formatı tek yerden yönetilir (drift riski biter).
 3. Chromex "kullanıcı" konumuna geçer; paket kendi başına değer üretir.
 
@@ -63,8 +63,8 @@ onayı (webhook/Slack onayı yol haritasında).
   (trusted publisher), sürüm 1.0.0
 
 Kalan MANUEL adımlar (hesap/izin gerektirir):
-1. PyPI'da `policygate` adının müsaitlik kontrolü
+1. ~~Paket adı kontrolü~~ ✅ `policygate` doluydu → `policy-gate` alındı (müsait)
 2. PyPI projesinde bu repo + publish-policygate.yml + "pypi" environment
-   ile trusted publisher tanımı
-3. pyproject.toml'a gerçek repo URL'si ([project.urls])
+   ile trusted publisher tanımı (pending publisher: proje adı policy-gate)
+3. ~~pyproject.toml'a gerçek repo URL'si~~ ✅ javamodu/chromex
 4. GitHub Release aç → otomatik yayın
