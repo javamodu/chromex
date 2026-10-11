@@ -10,7 +10,8 @@ Bu depo iki bağımsız araç seti içerir:
 | İş | Komut |
 |---|---|
 | Testler | `cd windows-browser-automation; python -m unittest discover -s tests` |
-| policy-gate testleri | `cd policy-gate; $env:PYTHONPATH="src"; python -m unittest discover -s tests` |
+| policy-gate testleri | `cd policy-gate; python -m unittest discover -s tests` (editable kurulumdan sonra PYTHONPATH gerekmez) |
+| CI lokal taklit | iki suite'i de çalıştır; sayaçlar CI/README ile eşleşmeli |
 | CLI | `python -m orchestrator.cli <komut>` (paket kuruluysa `otomasyon <komut>`) |
 | Kurulum | `python -m pip install -e policy-gate` ardından `python -m pip install -e windows-browser-automation` |
 
@@ -30,3 +31,14 @@ Bu depo iki bağımsız araç seti içerir:
   kurulu olmadan da testler geçmeli (lazy import kuralı).
 - **Stil:** Yorumlar "neden"i açıklar; modül başı docstring düzenini koru; yeni CLI
   komutu `@command` dekoratörüyle eklenir (registry deseni).
+- **Konsol çıktısı:** Kullanıcıya yazan her metin cp1252-güvenli olmalı
+  (`policygate.approval._console_safe` deseni — Windows CI runner'ları cp1252'dir;
+  bu ders CI'da gerçek hatayla öğrenildi).
+- **Bağımlılık:** policygate çekirdeği stdlib-only kalır; yeni bağımlılık ancak
+  `[project.optional-dependencies]` extra'sı olarak eklenir (ör. `policy-gate[http]`).
+- **Sayaç senkronu:** Test ekleyen/silen, test sayaçlarını aynı commit'te günceller
+  (`.github/workflows/test.yml`, kök README, wba README).
+- **Sürüm/Release:** semver; tag `vX.Y.Z`; release GitHub'dan açılır →
+  `publish-policygate.yml` PyPI'a iner (trusted publisher).
+- **Gizli veri:** `.env`, `audit/`, `data/` hiçbir zaman commit'lenmez
+  (`.gitignore`'a değil, bu kurala güven).
