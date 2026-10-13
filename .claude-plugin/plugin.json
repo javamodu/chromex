@@ -1,0 +1,17 @@
+{
+  "name": "chromex",
+  "version": "0.1.0",
+  "description": "Chromex deposu sözleşmesi: policygate tek-kaynak güvenlik çekirdeği, onay kapısı kuralları, test sayacı senkronu ve repo komutları için yol gösterici skill.",
+  "author": {
+    "name": "Chromex katkıcıları"
+  },
+  "repository": "https://github.com/javamodu/chromex",
+  "license": "MIT",
+  "keywords": [
+    "chromex",
+    "policygate",
+    "onay-kapisi",
+    "audit-zinciri",
+    "windows-otomasyon"
+  ]
+}

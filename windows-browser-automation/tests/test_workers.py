@@ -22,6 +22,7 @@ import base64
 import io
 import json
 import os
+import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -182,7 +183,8 @@ class GmailWorkerTests(WorkerTestCase):
                 {"name": "To", "value": "a@b.c"},
                 {"name": "Subject", "value": "K"}]}, "snippet": "x"}}
         drafts.send.return_value.execute.return_value = {"id": "s1"}
-        with mock.patch.object(self.worker, "_service", return_value=svc), \
+        with mock.patch.object(self.worker, "preflight"), \
+             mock.patch.object(self.worker, "_service", return_value=svc), \
              mock.patch.object(self.worker, "require",
                                side_effect=lambda r: captured.update(level=r.level)):
             sent = self.worker.send_draft("d1")
@@ -256,7 +258,8 @@ class LinkedInWorkerTests(WorkerTestCase):
 
     def test_create_post_basarili(self):
         captured = {}
-        with mock.patch.object(self.worker, "me", return_value={"id": "u1"}), \
+        with mock.patch.object(self.worker, "preflight"), \
+             mock.patch.object(self.worker, "me", return_value={"id": "u1"}), \
              mock.patch.object(self.worker, "require",
                                side_effect=lambda r: captured.update(level=r.level)), \
              mock.patch.object(self.worker, "request_json",
@@ -473,3 +476,86 @@ class AuditBridgeParityTests(WorkerTestCase):
         lines = (audit._audit_file().read_text(encoding="utf-8")
                  .strip().splitlines())
         self.assertEqual([json.loads(l)["seq"] for l in lines], [1, 2, 3])
+
+class OnaySiralamaTests(WorkerTestCase):
+    """P1-4: SEND akışlarında onay kapısı ağ çağrılarından ÖNCE gelir."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from workers import gmail_worker, linkedin_worker
+        self.gmail = gmail_worker
+        self.linkedin = linkedin_worker
+
+    def test_linkedin_preflight_me_oncesi(self):
+        sira = []
+        with mock.patch.object(self.linkedin, "preflight",
+                               side_effect=lambda r: sira.append("preflight")), \
+             mock.patch.object(self.linkedin, "me",
+                               side_effect=lambda: sira.append("me") or {"id": "u1"}), \
+             mock.patch.object(self.linkedin, "require",
+                               side_effect=lambda r: sira.append("require")), \
+             mock.patch.object(self.linkedin, "request_json",
+                               return_value={"id": "urn:li:ugcPost:9"}):
+            self.linkedin.create_post("merhaba")
+        self.assertEqual(sira, ["preflight", "require", "me"])
+
+    def test_gmail_preflight_service_oncesi(self):
+        sira = []
+        svc = mock.MagicMock()
+        drafts = svc.users.return_value.drafts.return_value
+        drafts.get.return_value.execute.return_value = {
+            "message": {"payload": {"headers": []}, "snippet": "x"}}
+        drafts.send.return_value.execute.return_value = {"id": "s1"}
+        with mock.patch.object(self.gmail, "preflight",
+                               side_effect=lambda r: sira.append("preflight")), \
+             mock.patch.object(self.gmail, "_service",
+                               side_effect=lambda: sira.append("service") or svc), \
+             mock.patch.object(self.gmail, "require",
+                               side_effect=lambda r: sira.append("require")):
+            self.gmail.send_draft("d1")
+        self.assertEqual(sira, ["preflight", "service", "require"])
+
+    def test_gmail_google_eksikse_yonlendirici_hata(self):
+        eksik = {"google.auth.transport.requests": None,
+                 "google.oauth2.credentials": None,
+                 "google_auth_oauthlib.flow": None,
+                 "googleapiclient.discovery": None}
+        with mock.patch.dict(sys.modules, eksik):
+            with self.assertRaises(RuntimeError) as ctx:
+                self.gmail._service()
+        self.assertIn("pip install", str(ctx.exception))
+
+
+class CliHataSunumuTests(WorkerTestCase):
+    """P1-2/P1-3: hata sunumu tek satır; cp1252 konsolda çökme yok."""
+
+    def test_is_hatasi_tek_satir_exit1(self):
+        from orchestrator import cli
+        with mock.patch.object(cli, "dispatch",
+                               side_effect=RuntimeError("VERCEL_TOKEN eksik")):
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                kod = cli.main(["vercel-durum"])
+        self.assertEqual(kod, 1)
+        self.assertIn("Hata: VERCEL_TOKEN eksik", buf.getvalue())
+        self.assertNotIn("Traceback", buf.getvalue())
+
+    def test_onay_reddi_exit2(self):
+        from orchestrator import cli
+        with mock.patch.object(cli, "dispatch",
+                               side_effect=ApprovalDenied("red")):
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                kod = cli.main(["vercel-durum"])
+        self.assertEqual(kod, 2)
+        self.assertIn("İşlem iptal edildi", buf.getvalue())
+
+    def test_cp1252_konsolda_help_cokmez(self):
+        from orchestrator import cli
+        ham = io.BytesIO()
+        yazi = io.TextIOWrapper(ham, encoding="cp1252")
+        with redirect_stdout(yazi):
+            with self.assertRaises(SystemExit) as ctx:
+                cli.main(["--help"])
+        yazi.flush()
+        self.assertEqual(ctx.exception.code, 0)

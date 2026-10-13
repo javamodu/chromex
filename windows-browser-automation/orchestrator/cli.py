@@ -15,6 +15,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
+import traceback
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -252,6 +255,13 @@ def dispatch(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # cp1252 gibi sınırlı kod sayfalı konsollarda Türkçe çıktı çökmesin
+    # (AGENTS.md kuralı): kodlama değişmez, yazım hatası '?' katlanmasına döner.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     secrets.load_dotenv()
     args = build_parser().parse_args(argv)
     try:
@@ -259,7 +269,17 @@ def main(argv: list[str] | None = None) -> int:
     except ApprovalDenied as exc:
         print(f"\nİşlem iptal edildi: {exc}")
         return 2
-
+    except KeyboardInterrupt:
+        print("\nİptal edildi (Ctrl+C).")
+        return 130
+    except Exception as exc:
+        # İş hataları (env eksik, CDP kapalı, HTTP 4xx, eksik modül) zaten
+        # yönlendirici mesaj taşır; traceback yalnızca CHROMEX_DEBUG ile.
+        if os.environ.get("CHROMEX_DEBUG"):
+            traceback.print_exc()
+        else:
+            print(f"\nHata: {exc}")
+        return 1
 
 if __name__ == "__main__":
     raise SystemExit(main())

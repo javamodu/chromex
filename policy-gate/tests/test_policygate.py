@@ -14,8 +14,8 @@ from unittest import mock
 
 from policygate import approval, audit, policy, secrets
 from policygate.approval import (ActionRequest, ApprovalDenied,
-                                 TerminalChannel, WebhookChannel, require,
-                                 set_channel)
+                                 TerminalChannel, WebhookChannel, preflight,
+                                 require, set_channel)
 
 
 class TempEnvTestCase(unittest.TestCase):
@@ -237,3 +237,47 @@ class KanalTests(TempEnvTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class TerminalEOFTests(TempEnvTestCase):
+    """stdin kapalı/NUL iken input() EOF yiyebilir (Windows isatty yanılgısı)."""
+
+    def test_eof_red_sayilir_cokme_yok(self):
+        req = ActionRequest(worker="test", action="test.islem", level="SEND",
+                            summary="t", details={})
+        sahte_stdin = mock.MagicMock()
+        sahte_stdin.isatty.return_value = True  # Windows NUL yanılgısı
+        with mock.patch("policygate.approval.sys.stdin", sahte_stdin), \
+             mock.patch("builtins.input", side_effect=EOFError):
+            with self.assertRaises(ApprovalDenied):
+                require(req)
+        ok, _ = audit.verify_chain()
+        self.assertTrue(ok)
+
+
+class PreflightTests(TempEnvTestCase):
+    """preflight: ağ/IO öncesi erken red kapısı (require ile çift onay yok)."""
+
+    def _req(self, level: str = "SEND") -> ActionRequest:
+        return ActionRequest(worker="test", action="test.islem", level=level,
+                             summary="t", details={})
+
+    def test_policy_deny_erken_reddeder(self):
+        Path(os.environ["POLICY_FILE"]).write_text(
+            json.dumps({"always_deny": ["test.islem"]}), encoding="utf-8")
+        with self.assertRaises(ApprovalDenied):
+            preflight(self._req())
+
+    def test_etkilesimsiz_send_erken_reddeder(self):
+        sahte_stdin = mock.MagicMock()
+        sahte_stdin.isatty.return_value = False
+        with mock.patch("policygate.approval.sys.stdin", sahte_stdin):
+            with self.assertRaises(ApprovalDenied):
+                preflight(self._req("SEND"))
+
+    def test_etkilesimli_oturumda_sessiz_gecer(self):
+        sahte_stdin = mock.MagicMock()
+        sahte_stdin.isatty.return_value = True
+        with mock.patch("policygate.approval.sys.stdin", sahte_stdin):
+            preflight(self._req("SEND"))  # fırlatmaz; nihai karar require()'ın
+        ok, _ = audit.verify_chain()
+        self.assertTrue(ok)  # geçişte audit yazılmaz, zincir bütün kalır

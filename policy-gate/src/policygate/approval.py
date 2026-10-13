@@ -72,8 +72,12 @@ class TerminalChannel:
 
     def ask(self, req: ActionRequest) -> bool:
         _show(req)
-        answer = input(_console_safe(
-            "Bu işlemi onaylıyor musunuz? Yalnızca 'EVET' kabul edilir: "))
+        try:
+            answer = input(_console_safe(
+                "Bu işlemi onaylıyor musunuz? Yalnızca 'EVET' kabul edilir: "))
+        except EOFError:
+            # stdin kapalı/NUL (Windows'ta isatty() yanılabilir): cokme, red say
+            return False
         return answer.strip() == "EVET"
 
 
@@ -125,9 +129,12 @@ def set_channel(channel: ApprovalChannel, *,
     _channel_allow_non_interactive = allow_non_interactive
 
 
-def require(req: ActionRequest) -> None:
-    """Onay alınamazsa ApprovalDenied fırlatır; alınırsa sessizce döner."""
-    pol = policy.load()
+def _offline_check(req: ActionRequest, pol: dict) -> None:
+    """Ağa/kanala çıkmadan verilebilen kesin redler (policy-deny, etkileşimsiz).
+
+    Yalnızca red kararında audit yazar; geçiş sessizdir — nihai kararın
+    audit kaydını require() yazar (çift kayıt olmaz).
+    """
     mode = policy.decision_for(req.level, req.action, pol)
 
     if mode == "deny":
@@ -135,31 +142,57 @@ def require(req: ActionRequest) -> None:
                         {"action": req.action, **req.details})
         raise ApprovalDenied(f"Policy bu işlemi yasaklıyor: {req.action}")
 
+    if mode != "ask":
+        return
+    if sys.stdin.isatty() or _channel_allow_non_interactive:
+        return
+    if req.level.upper() in {"SEND", "DELETE"}:
+        # Kritik seviyeler etkileşimsiz oturumda asla otomatik onaylanmaz;
+        # non_interactive_default="auto" bile bunu geçemez.
+        audit.log_event("action_non_interactive", req.worker, req.level,
+                        "deny", {"action": req.action,
+                                 "neden": "kritik_seviye_etkilesimsiz"})
+        raise ApprovalDenied(
+            f"Etkileşimsiz oturumda {req.level} seviyesi her zaman "
+            f"reddedilir: {req.action}"
+        )
+    default = str(pol.get("non_interactive_default", "deny")).lower()
+    if default != "auto":
+        audit.log_event("action_non_interactive", req.worker, req.level, default,
+                        {"action": req.action})
+        raise ApprovalDenied(
+            "Etkileşimsiz oturumda onay istenemez; işlem reddedildi "
+            "(policy: non_interactive_default)."
+        )
+
+
+def preflight(req: ActionRequest) -> None:
+    """Ağ/IO öncesi erken kapı: kesin redleri require()'dan önce yakalar.
+
+    Onay ekranında detay göstermek için okuma çağırısı gereken akışlarda
+    (ör. e-posta taslağının alıcısını getirmek) ağa çıkmadan ÖNCE
+    çağırılır; geçerse sessiz döner, nihai karar yine require() ile
+    verilir (çift onay sorulmaz).
+    """
+    _offline_check(req, policy.load())
+
+
+def require(req: ActionRequest) -> None:
+    """Onay alınamazsa ApprovalDenied fırlatır; alınırsa sessizce döner."""
+    pol = policy.load()
+    _offline_check(req, pol)
+    mode = policy.decision_for(req.level, req.action, pol)
+
     if mode == "auto":
         audit.log_event("action_auto_approved", req.worker, req.level, "auto",
                         {"action": req.action, "summary": req.summary})
         return
 
-    # mode == "ask"
+    # mode == "ask" — _offline_check geçildi: etkileşimli oturum, izinli
+    # kanal veya non_interactive_default="auto" demektir.
     if not sys.stdin.isatty() and not _channel_allow_non_interactive:
-        if req.level.upper() in {"SEND", "DELETE"}:
-            # Kritik seviyeler etkileşimsiz oturumda asla otomatik onaylanmaz;
-            # non_interactive_default="auto" bile bunu geçemez.
-            audit.log_event("action_non_interactive", req.worker, req.level,
-                            "deny", {"action": req.action,
-                                     "neden": "kritik_seviye_etkilesimsiz"})
-            raise ApprovalDenied(
-                f"Etkileşimsiz oturumda {req.level} seviyesi her zaman "
-                f"reddedilir: {req.action}"
-            )
-        default = str(pol.get("non_interactive_default", "deny")).lower()
-        audit.log_event("action_non_interactive", req.worker, req.level, default,
+        audit.log_event("action_non_interactive", req.worker, req.level, "auto",
                         {"action": req.action})
-        if default != "auto":
-            raise ApprovalDenied(
-                "Etkileşimsiz oturumda onay istenemez; işlem reddedildi "
-                "(policy: non_interactive_default)."
-            )
         return
 
     kanal = type(_channel).__name__

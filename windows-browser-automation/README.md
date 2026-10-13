@@ -139,7 +139,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-35 test (+ policygate paketinde 30); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+41 test (+ policygate paketinde 34); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
 linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
 Playwright gerektirmez, offline çalışır.
@@ -149,15 +149,15 @@ Playwright gerektirmez, offline çalışır.
 | Parça | Satır |
 |---|---|
 | core/ (store, http köprüsü, oauth) | 123 |
-| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 818 |
-| orchestrator/cli.py (registry desenli) | 265 |
-| tests/ | 526 |
+| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 834 |
+| orchestrator/cli.py (registry desenli) | 285 |
+| tests/ | 612 |
 | blender/ | 47 |
-| Python toplam | **1.779** |
+| Python toplam | **1.901** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
-policygate paketinde yaşar: 642 satır + 375 satır test (`../policy-gate/`).
+policygate paketinde yaşar: 676 satır + 419 satır test (`../policy-gate/`).
 
 ## Bilinen sadeleştirmeler
 

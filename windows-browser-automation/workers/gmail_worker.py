@@ -18,7 +18,7 @@ from email.message import EmailMessage
 from pathlib import Path
 
 from core import store
-from policygate import ActionRequest, audit, require
+from policygate import ActionRequest, audit, preflight, require
 
 WORKER = "gmail"
 SCOPES = [
@@ -36,10 +36,17 @@ def _token_file() -> Path:
 
 
 def _service():
-    from google.auth.transport.requests import Request
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
-    from googleapiclient.discovery import build
+    try:
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from googleapiclient.discovery import build
+    except ImportError as exc:
+        raise RuntimeError(
+            "Google bağımlılıkları eksik — kurulum: "
+            "pip install -r requirements.txt "
+            f"(google-api-python-client, google-auth, google-auth-oauthlib) [{exc}]"
+        ) from exc
 
     creds = None
     if _token_file().exists():
@@ -102,6 +109,13 @@ def create_draft(to: str, subject: str, body: str) -> str:
 
 def send_draft(draft_id: str) -> dict:
     """Taslağı gönderir — SEND seviyesi, alıcı/konu gösterilip ONAY istenir."""
+    preflight(ActionRequest(
+        worker=WORKER,
+        action="gmail.send_draft",
+        level="SEND",
+        summary="Gmail taslağı GÖNDERİLECEK — alıcı ve konu onayda gösterilecek.",
+        details={"draft_id": draft_id},
+    ))
     svc = _service()
     draft = svc.users().drafts().get(
         userId="me", id=draft_id, format="full").execute()

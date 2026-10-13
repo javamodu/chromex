@@ -14,14 +14,15 @@ Hızlı kullanım:
     ))
 """
 from .approval import (ActionRequest, ApprovalChannel, ApprovalDenied,
-                       TerminalChannel, WebhookChannel, require, set_channel)
+                       TerminalChannel, WebhookChannel, preflight, require,
+                       set_channel)
 from .audit import log_event, verify_chain
 from .policy import DEFAULT_POLICY, decision_for, load
 
 __version__ = "1.0.0"
 
 __all__ = [
-    "ActionRequest", "ApprovalDenied", "require",
+    "ActionRequest", "ApprovalDenied", "require", "preflight",
     "ApprovalChannel", "TerminalChannel", "WebhookChannel", "set_channel",
     "log_event", "verify_chain",
     "DEFAULT_POLICY", "decision_for", "load",

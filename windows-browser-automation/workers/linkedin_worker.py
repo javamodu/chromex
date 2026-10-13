@@ -26,7 +26,7 @@ from __future__ import annotations
 import json
 
 from core import oauth, store
-from policygate import ActionRequest, audit, require, secrets
+from policygate import ActionRequest, audit, preflight, require, secrets
 from core.http import request_json
 
 WORKER = "linkedin"
@@ -61,8 +61,7 @@ def create_post(text: str, visibility: str = "PUBLIC") -> str:
     visibility = visibility.upper()
     if visibility not in {"PUBLIC", "CONNECTIONS"}:
         raise ValueError("visibility PUBLIC veya CONNECTIONS olmalı.")
-    author_id = me()["id"]
-    require(ActionRequest(
+    istek = ActionRequest(
         worker=WORKER,
         action="linkedin.create_post",
         level="SEND",
@@ -73,7 +72,10 @@ def create_post(text: str, visibility: str = "PUBLIC") -> str:
             "metin_önizleme": text[:500],
             "uzunluk": len(text),
         },
-    ))
+    )
+    preflight(istek)  # ağa çıkmadan önce kesin redleri yakala
+    require(istek)    # onay, profil okuması dahil her türlü ağdan önce
+    author_id = me()["id"]
     body = {
         "author": f"urn:li:person:{author_id}",
         "lifecycleState": "PUBLISHED",
