@@ -150,10 +150,10 @@ Playwright gerektirmez, offline çalışır.
 |---|---|
 | core/ (store, http köprüsü, oauth) | 123 |
 | workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 834 |
-| orchestrator/cli.py (registry desenli) | 221 |
+| orchestrator/cli.py (registry desenli) | 290 |
 | tests/ | 626 |
 | blender/ | 47 |
-| Python toplam | **1851** |
+| Python toplam | **1.920** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
