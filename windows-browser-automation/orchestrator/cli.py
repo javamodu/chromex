@@ -62,7 +62,8 @@ def _print(obj) -> None:
 # --- GitHub ---------------------------------------------------------------
 
 @command("github-arastir", "GitHub repo araması",
-         (("sorgu", {}), ("--limit", {"type": int, "default": 10})))
+         (("sorgu", {"help": 'ör. "language:python otomasyon"'}),
+          ("--limit", {"type": int, "default": 10, "help": "en fazla kayıt"})))
 def _github_arastir(args):
     from workers import github_worker
     _print(github_worker.search_repos(args.sorgu, args.limit))
@@ -70,19 +71,19 @@ def _github_arastir(args):
 
 @command("github-issues", "Bir reponun issue listesi",
          (("repo", {"help": "ör. microsoft/playwright-cli"}),
-          ("--state", {"default": "open"}),
-          ("--limit", {"type": int, "default": 20})))
+          ("--state", {"default": "open", "help": "open | closed | all"}),
+          ("--limit", {"type": int, "default": 20, "help": "en fazla kayıt"})))
 def _github_issues(args):
     from workers import github_worker
     _print(github_worker.repo_issues(args.repo, args.state, args.limit))
 
 
 @command("github-pr", "Pull request aç (gh; onay ister)",
-         (("--title", {"required": True}),
-          ("--govde", {"default": ""}),
-          ("--base", {"default": "main"}),
-          ("--head", {"default": None}),
-          ("--draft", {"action": "store_true"})))
+         (("--title", {"required": True, "help": "PR başlığı"}),
+          ("--govde", {"default": "", "help": "PR açıklaması (markdown)"}),
+          ("--base", {"default": "main", "help": "hedef dal"}),
+          ("--head", {"default": None, "help": "kaynak dal (boş: mevcut dal)"}),
+          ("--draft", {"action": "store_true", "help": "taslak PR olarak aç"})))
 def _github_pr(args):
     from workers import github_worker
     url = github_worker.create_pr(args.title, args.govde, args.base,
@@ -94,16 +95,16 @@ def _github_pr(args):
 
 @command("gmail-ara", "Gmail'de ara (READ)",
          (("sorgu", {"help": 'ör. "from:github.com is:unread"'}),
-          ("--limit", {"type": int, "default": 10})))
+          ("--limit", {"type": int, "default": 10, "help": "en fazla kayıt"})))
 def _gmail_ara(args):
     from workers import gmail_worker
     _print(gmail_worker.search(args.sorgu, args.limit))
 
 
 @command("gmail-taslak", "E-posta taslağı oluştur (GÖNDERMEZ)",
-         (("--to", {"required": True}),
-          ("--konu", {"required": True}),
-          ("--govde", {"required": True})))
+         (("--to", {"required": True, "help": "alıcı e-posta adresi"}),
+          ("--konu", {"required": True, "help": "e-posta konusu"}),
+          ("--govde", {"required": True, "help": "e-posta gövdesi"})))
 def _gmail_taslak(args):
     from workers import gmail_worker
     draft_id = gmail_worker.create_draft(args.to, args.konu, args.govde)
@@ -111,7 +112,7 @@ def _gmail_taslak(args):
     print(f"Göndermek için: python -m orchestrator.cli gmail-gonder {draft_id}")
 
 
-@command("gmail-gonder", "Taslağı GÖNDER (onay ister)", (("draft_id", {}),))
+@command("gmail-gonder", "Taslağı GÖNDER (onay ister)", (("draft_id", {"help": "taslak kimliği (gmail-taslak çıktısı)"}),))
 def _gmail_gonder(args):
     from workers import gmail_worker
     sent = gmail_worker.send_draft(args.draft_id)
@@ -121,7 +122,7 @@ def _gmail_gonder(args):
 # --- X (Twitter) ----------------------------------------------------------
 
 @command("x-bookmarks", "X yer işaretlerini çek (ÜCRETLİ API)",
-         (("--limit", {"type": int, "default": 50}),))
+         (("--limit", {"type": int, "default": 50, "help": "en fazla kayıt"}),))
 def _x_bookmarks(args):
     from workers import x_bookmarks_worker
     items = x_bookmarks_worker.fetch_bookmarks(args.limit)
@@ -143,8 +144,8 @@ def _linkedin_profil(args):
 
 
 @command("linkedin-paylas", "LinkedIn'de metin paylaş (SEND, onay ister)",
-         (("--metin", {"required": True}),
-          ("--gorunurluk", {"default": "PUBLIC",
+         (("--metin", {"required": True, "help": "paylaşılacak metin"}),
+          ("--gorunurluk", {"default": "PUBLIC", "help": "kimler görsün",
                             "choices": ["PUBLIC", "CONNECTIONS"]})))
 def _linkedin_paylas(args):
     from workers import linkedin_worker
@@ -159,17 +160,17 @@ def _linkedin_token_yenile(args):
 
 
 @command("linkedin-akis", "Açık oturumdan akış oku (tarayıcı, CDP, READ)",
-         (("--limit", {"type": int, "default": 20}),))
+         (("--limit", {"type": int, "default": 20, "help": "en fazla kayıt"}),))
 def _linkedin_akis(args):
     from workers import linkedin_browser
     _print(linkedin_browser.feed(args.limit))
 
 
 @command("linkedin-ara", "Açık oturumda arama oku (tarayıcı, CDP, READ)",
-         (("sorgu", {}),
-          ("--tur", {"default": "people",
+         (("sorgu", {"help": "arama ifadesi"}),
+          ("--tur", {"default": "people", "help": "arama türü",
                      "choices": ["people", "posts", "jobs", "companies"]}),
-          ("--limit", {"type": int, "default": 10})))
+          ("--limit", {"type": int, "default": 10, "help": "en fazla kayıt"})))
 def _linkedin_ara(args):
     from workers import linkedin_browser
     _print(linkedin_browser.search(args.sorgu, args.limit, args.tur))
@@ -178,8 +179,8 @@ def _linkedin_ara(args):
 # --- Canva ----------------------------------------------------------------
 
 @command("canva-export", "Canva tasarımını dışa aktar",
-         (("design_id", {}),
-          ("--format", {"default": "pdf",
+         (("design_id", {"help": "Canva tasarım kimliği"}),
+          ("--format", {"default": "pdf", "help": "dışa aktarma biçimi",
                         "choices": ["pdf", "jpg", "png", "gif", "pptx", "mp4"]})))
 def _canva_export(args):
     from workers import canva_worker
@@ -190,29 +191,30 @@ def _canva_export(args):
 # --- Supabase / Vercel ----------------------------------------------------
 
 @command("supabase-sorgu", "PostgREST salt-okunur sorgu",
-         (("tablo", {}),
-          ("--select", {"default": "*"}),
-          ("--limit", {"type": int, "default": 20})))
+         (("tablo", {"help": "tablo adı"}),
+          ("--select", {"default": "*", "help": "sütun listesi (PostgREST)"}),
+          ("--limit", {"type": int, "default": 20, "help": "en fazla kayıt"})))
 def _supabase_sorgu(args):
     from workers import supabase_worker
     _print(supabase_worker.query_table(args.tablo, args.select, args.limit))
 
 
 @command("vercel-durum", "Son deployment'lar",
-         (("--app", {}), ("--limit", {"type": int, "default": 10})))
+         (("--app", {"help": "uygulama adı filtresi"}),
+          ("--limit", {"type": int, "default": 10, "help": "en fazla kayıt"})))
 def _vercel_durum(args):
     from workers import vercel_worker
     _print(vercel_worker.list_deployments(args.app, args.limit))
 
 
-@command("vercel-log", "Deployment build olayları", (("deployment_id", {}),))
+@command("vercel-log", "Deployment build olayları", (("deployment_id", {"help": "deployment kimliği (dpl_...)"}),))
 def _vercel_log(args):
     from workers import vercel_worker
     _print(vercel_worker.deployment_events(args.deployment_id))
 
 
 @command("vercel-iptal", "Deployment iptal (onay ister)",
-         (("deployment_id", {}),))
+         (("deployment_id", {"help": "deployment kimliği (dpl_...)"}),))
 def _vercel_iptal(args):
     from workers import vercel_worker
     _print(vercel_worker.cancel_deployment(args.deployment_id))
@@ -221,8 +223,8 @@ def _vercel_iptal(args):
 # --- Yerel ----------------------------------------------------------------
 
 @command("son-kayitlar", "Sonuç deposundaki son kayıtlar",
-         (("--kaynak", {"default": None}),
-          ("--limit", {"type": int, "default": 20})))
+         (("--kaynak", {"default": None, "help": "kaynak filtresi (ör. github, x)"}),
+          ("--limit", {"type": int, "default": 20, "help": "en fazla kayıt"})))
 def _son_kayitlar(args):
     for row in store.recent(args.kaynak, args.limit):
         print(" | ".join(str(x) for x in row))
