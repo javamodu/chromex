@@ -1,8 +1,8 @@
 """Gmail worker'ı (resmi Gmail API).
 
 Kurulum (bir kez):
-1) console.cloud.google.com → proje aç → Gmail API'yi etkinleştir.
-2) OAuth consent screen → Desktop app credential oluştur → credentials.json
+1) console.cloud.google.com -> proje aç -> Gmail API'yi etkinleştir.
+2) OAuth consent screen -> Desktop app credential oluştur -> credentials.json
    olarak proje köküne kaydet.
 3) İlk `gmail-ara` çağrısında tarayıcı açılır, izin verilir; token.json
    otomatik oluşur ve sonraki çağrılarda yenilenir.

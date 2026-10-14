@@ -122,7 +122,7 @@ def _gmail_gonder(args):
 def _x_bookmarks(args):
     from workers import x_bookmarks_worker
     items = x_bookmarks_worker.fetch_bookmarks(args.limit)
-    print(f"{len(items)} yer işareti kaydedildi → data/results.db")
+    print(f"{len(items)} yer işareti kaydedildi -> data/results.db")
 
 
 @command("x-token-yenile", "X OAuth2 access token yenile")

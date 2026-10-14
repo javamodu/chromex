@@ -1,6 +1,6 @@
 """Vercel worker'ı — deployment durumu ve build log'ları (REST).
 
-Gereken (.env): VERCEL_TOKEN (Account Settings → Tokens),
+Gereken (.env): VERCEL_TOKEN (Account Settings -> Tokens),
 opsiyonel VERCEL_TEAM_ID (takım hesapları için).
 
 cancel_deployment, MODIFY seviyesinde onay kapısının nasıl kullanılacağına
