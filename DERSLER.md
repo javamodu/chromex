@@ -11,3 +11,4 @@ Negatif bilgi defteri: denendi, patladı, kural çıktı. Yeni tuzak EN ALTA ekl
 - 2026-10-14 · PowerShell 5.1 `Set-Content -Encoding UTF8` dosyaya BOM yazar — JSON okuyucular `utf-8-sig` ile okumalı (policy.py). Kanıt: cli-qa P2-10.
 - 2026-10-14 · Uzun sessiz bekleyiş kullanıcıya çökme gibi görünür — retry/backoff mesajları varsayılan görünür seviyede (warning) olmalı, `_log.info` kaybolur. Kanıt: cli-qa P2-9.
 - 2026-10-14 · Onay reddi ile argüman hatası aynı exit kodunu paylaşmamalı — reddedilen işlem exit 3, usage hatası exit 2 (betikler ayırt edebilsin). Kanıt: cli-qa P2-6.
+- 2026-10-15 · PowerShell'de `python -c "... $(...)"` cift-tirnakli dizge interpolasyon tuzagi — `$`, `()` ve `"` PS tarafindan python'a ulasmadan yenir. Kural: python her zaman tek-tirnakli here-string + `[IO.File]::WriteAllText` ile temp dosyaya, oradan calistirilir. Kanit: Faz 1 quickstart duzeltmesi ilk denemede PS parser hatasi.
