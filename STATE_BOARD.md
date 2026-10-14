@@ -1,6 +1,7 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
+- bekci raporu: raporlar/takip-sozlesme/2026-10-14.md (untracked — commit bekliyor)
 Yok (gece vardiyası 2026-10-14 tamamlandı; heartbeat 07:00'de kapanıyor).
 
 ## Son damgalar
