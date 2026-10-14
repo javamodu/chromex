@@ -540,14 +540,14 @@ class CliHataSunumuTests(WorkerTestCase):
         self.assertIn("Hata: VERCEL_TOKEN eksik", buf.getvalue())
         self.assertNotIn("Traceback", buf.getvalue())
 
-    def test_onay_reddi_exit2(self):
+    def test_onay_reddi_exit3(self):
         from orchestrator import cli
         with mock.patch.object(cli, "dispatch",
                                side_effect=ApprovalDenied("red")):
             buf = io.StringIO()
             with redirect_stdout(buf):
                 kod = cli.main(["vercel-durum"])
-        self.assertEqual(kod, 2)
+        self.assertEqual(kod, 3)  # onay reddi, usage hatasindan (2) ayrik
         self.assertIn("İşlem iptal edildi", buf.getvalue())
 
     def test_cp1252_konsolda_help_cokmez(self):
@@ -559,3 +559,17 @@ class CliHataSunumuTests(WorkerTestCase):
                 cli.main(["--help"])
         yazi.flush()
         self.assertEqual(ctx.exception.code, 0)
+
+class BosSonucTests(WorkerTestCase):
+    """P2-8: ham [] / {} yerine kullanici dostu mesaj."""
+
+    def test_bos_sonuc_dostu_mesaj(self):
+        from orchestrator import cli
+        with mock.patch.object(cli, "dispatch",
+                               side_effect=lambda a: cli._print([]) or 0):
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                kod = cli.main(["vercel-durum"])
+        self.assertEqual(kod, 0)
+        self.assertIn("sonuç bulunamadı", buf.getvalue())
+        self.assertNotIn("[]", buf.getvalue())

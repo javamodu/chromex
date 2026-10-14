@@ -281,3 +281,12 @@ class PreflightTests(TempEnvTestCase):
             preflight(self._req("SEND"))  # fırlatmaz; nihai karar require()'ın
         ok, _ = audit.verify_chain()
         self.assertTrue(ok)  # geçişte audit yazılmaz, zincir bütün kalır
+
+class BomToleransTests(TempEnvTestCase):
+    """P2-10: PS 5.1 `Set-Content -Encoding UTF8` BOM yazar; policy okunabilmeli."""
+
+    def test_bom_lu_dosya_okunur(self):
+        Path(os.environ["POLICY_FILE"]).write_bytes(
+            b"\xef\xbb\xbf" + json.dumps(
+                {"non_interactive_default": "auto"}).encode("utf-8"))
+        self.assertEqual(policy.load()["non_interactive_default"], "auto")

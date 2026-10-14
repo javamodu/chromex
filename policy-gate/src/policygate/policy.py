@@ -40,7 +40,7 @@ def load() -> dict:
     if not path.exists():
         return json.loads(json.dumps(DEFAULT_POLICY))  # kopya
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8-sig"))  # BOM toleransı (PS 5.1 UTF8 BOM yazar)
     except (OSError, json.JSONDecodeError) as exc:
         _log.warning("policy okunamadı (%s) — güvenli varsayılanlar devrede", exc)
         return json.loads(json.dumps(DEFAULT_POLICY))

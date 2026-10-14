@@ -48,6 +48,9 @@ def command(name: str, help: str, args: ArgSpec = ()):
 
 
 def _print(obj) -> None:
+    if isinstance(obj, (list, dict)) and not obj:
+        print("(sonuç bulunamadı)")  # ham "[]"/"{}" hata sanılıyor
+        return
     text = json.dumps(obj, ensure_ascii=False, indent=2, default=str)
     try:
         print(text)
@@ -268,7 +271,7 @@ def main(argv: list[str] | None = None) -> int:
         return dispatch(args)
     except ApprovalDenied as exc:
         print(f"\nİşlem iptal edildi: {exc}")
-        return 2
+        return 3  # kullanici/politika reddi: argparse usage hatasindan (2) ayrik
     except KeyboardInterrupt:
         print("\nİptal edildi (Ctrl+C).")
         return 130
