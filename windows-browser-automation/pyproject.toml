@@ -12,9 +12,13 @@ dynamic = ["dependencies"]
 
 [project.scripts]
 otomasyon = "orchestrator.cli:main"
+chromex-mcp = "mcp_server.server:main"
+
+[project.optional-dependencies]
+mcp = ["mcp>=2.0,<3"]
 
 [tool.setuptools]
-packages = ["core", "workers", "orchestrator"]
+packages = ["core", "workers", "orchestrator", "mcp_server"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
