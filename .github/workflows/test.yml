@@ -22,6 +22,6 @@ jobs:
       - name: policygate testleri (35 adet, offline)
         working-directory: policy-gate
         run: python -m unittest discover -s tests -v
-      - name: wba testleri (52 adet, offline)
+      - name: wba testleri (53 adet, offline)
         working-directory: windows-browser-automation
         run: python -m unittest discover -s tests -v

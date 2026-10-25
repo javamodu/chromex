@@ -22,15 +22,30 @@ def _tool_function(spec: ToolSpec):
     parameters = [
         inspect.Parameter(
             name=arg_name.lstrip("-").replace("-", "_"),
-            kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            kind=inspect.Parameter.KEYWORD_ONLY,
             default=kwargs.get("default", inspect.Parameter.empty),
             annotation=_annotation(kwargs),
         )
         for arg_name, kwargs in spec.command_args
     ]
 
+    optional = {
+        arg_name.lstrip('-').replace('-', '_')
+        for arg_name, kwargs in spec.command_args
+        if arg_name.startswith('--') and not kwargs.get('required')
+    }
+    parameters = [
+        parameter if parameter.name not in optional else
+        parameter.replace(default=parameter.default
+                          if parameter.default is not inspect.Parameter.empty
+                          else None)
+        for parameter in parameters
+    ]
+    parameters.sort(key=lambda parameter: parameter.default is inspect.Parameter.empty,
+                    reverse=True)
+
     def wrapper(**kwargs: Any) -> dict[str, Any]:
-        return execute_tool(spec.name, kwargs)
+        return execute_tool(spec.name, **kwargs)
 
     wrapper.__name__ = spec.name
     wrapper.__qualname__ = spec.name
@@ -42,9 +57,7 @@ def _tool_function(spec: ToolSpec):
 
 def register_tools(server: Any) -> None:
     for spec in TOOLS:
-        server.tool(name=spec.name, description=spec.description)(
-            _tool_function(spec)
-        )
+        server.tool()(_tool_function(spec))
 
 
 def create_server(approval_callback=None) -> Any:

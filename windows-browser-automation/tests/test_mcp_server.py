@@ -56,6 +56,24 @@ class MCPToolTests(unittest.TestCase):
             main.call_args.args[0], ["github-arastir", "python", "--limit", "3"]
         )
 
+    def test_execute_tool_secret_redakte(self):
+        os.environ['CHROMEX_TEST_SECRET'] = 'GIZLI-TOKEN'
+        tools.secrets.get('CHROMEX_TEST_SECRET')
+        try:
+            with mock.patch.object(
+                tools.cli,
+                'main',
+                side_effect=lambda argv: print('token=GIZLI-TOKEN'),
+            ):
+                result = tools.execute_tool(
+                    'github-arastir', {'sorgu': 'python'}
+                )
+        finally:
+            os.environ.pop('CHROMEX_TEST_SECRET', None)
+            tools.secrets._REGISTERED.discard('GIZLI-TOKEN')
+        self.assertNotIn('GIZLI-TOKEN', result['stdout'])
+        self.assertIn('***', result['stdout'])
+
     def test_execute_tool_bilinmeyen_arguman_red(self):
         result = tools.execute_tool("github-arastir", {"sorgu": "x", "foo": 1})
         self.assertEqual(result["exitCode"], 2)
@@ -115,9 +133,9 @@ class FakeMCPServer:
         self.name = name
         self.registered = []
 
-    def tool(self, name=None, description=None, **_):
+    def tool(self):
         def decorator(fn):
-            self.registered.append((name, description, fn))
+            self.registered.append((fn.__name__, fn.__doc__, fn))
             return fn
 
         return decorator

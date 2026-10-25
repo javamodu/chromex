@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from orchestrator import cli
+from policygate import secrets
 
 
 @dataclass(frozen=True)
@@ -74,7 +75,7 @@ def to_cli_args(spec: ToolSpec, arguments: dict[str, Any]) -> list[str]:
     unknown = set(arguments) - valid
     if unknown:
         raise ValueError(f"bilinmeyen argüman: {', '.join(sorted(unknown))}")
-    argv: list[str] = []
+    argv: list[str] = [spec.name]
     for arg_name, kwargs in spec.command_args:
         destination = _destination(arg_name)
         default = kwargs.get("default")
@@ -103,7 +104,7 @@ def execute_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     stdout = io.StringIO()
     stderr = io.StringIO()
     try:
-        argv = [spec.name, *to_cli_args(spec, arguments)]
+        argv = to_cli_args(spec, arguments)
     except ValueError as exc:
         return {"stdout": "", "stderr": str(exc), "exitCode": 2}
     try:
@@ -114,7 +115,7 @@ def execute_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     except Exception as exc:
         return {"stdout": stdout.getvalue(), "stderr": str(exc), "exitCode": 1}
     return {
-        "stdout": stdout.getvalue(),
-        "stderr": stderr.getvalue(),
+        "stdout": secrets.redact(stdout.getvalue()),
+        "stderr": secrets.redact(stderr.getvalue()),
         "exitCode": exit_code,
     }

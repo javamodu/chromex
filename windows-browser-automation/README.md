@@ -11,6 +11,7 @@ Agent / sen
    │
    ├─ MCP config (0 satır kod) ── chrome-devtools-mcp / playwright-mcp / terminator
    ├─ Playwright CLI (0 satır kod) ── tekrarlanabilir tarayıcı akışları
+   ├─ chromex-mcp ── 20 CLI komutunu MCP tool'ına çevirir
    └─ python -m orchestrator.cli ── API worker'ları
                 │
                 ├─ workers/  github · gmail · x · linkedin (API + tarayıcı) · canva · supabase · vercel
@@ -26,7 +27,7 @@ Agent / sen
    gh CLI, pip bağımlılıkları + policygate çekirdek paketi). Alternatif paket
    kurulumu: `pip install -e ../policy-gate` ardından `pip install -e .`
    — `otomasyon` komutunu PATH'e ekler (bağımlılıklar requirements.txt'den
-   okunur).
+   okunur). MCP sunucusu da isteniyorsa: `pip install -e .[mcp]`.
 3. `.env.example` → `.env` kopyalayıp doldurun (aşağıdaki servis notlarına bakın).
 4. Otomasyon tarayıcısı: `scripts\start-chrome-automation.ps1`
    — ayrı profil + `127.0.0.1:9222` CDP portu açar. **İlk seferde hedef
@@ -63,6 +64,23 @@ Hepsi proje kökünden `python -m orchestrator.cli ...` ile çalışır:
 
 Toplanan her şey `data/results.db` (SQLite) içine yazılır; özetleme işi
 agent katmanına (Claude vb.) bırakılmıştır — kod veri toplar, yorum yapmaz.
+
+## MCP sunucusu
+
+`chromex-otomasyon[mcp]` extra'sı kuruluysa CLI'daki 20 komut MCP tool'ı
+olarak sunulur:
+
+```powershell
+pip install -e .[mcp]
+chromex-mcp
+```
+
+- Adaptör `mcp_server/` altında; CLI çekirdeği değişmez, tool çağrıları
+  yine `orchestrator.cli.main()` üzerinden geçer.
+- Onay/audit tek kaynağı `policygate` kalır. Standalone sunucuda onay
+  callback'i verilmezse SEND/MODIFY/DELETE güvenli şekilde reddedilir.
+- Katıştırmalı kullanımda `MCPApprovalChannel`'a `ActionRequest -> bool`
+  dönüştüren bir callback verilebilir; hata ve `True` dışı yanıtlar red sayılır.
 
 ## Onay + audit nasıl çalışır?
 
@@ -139,10 +157,10 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-42 test (+ policygate paketinde 35); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
-HTTP retry/backoff, depo katmanı ve tüm worker'ların (github, gmail, x,
-linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar. Ağ/gh/Google/
-Playwright gerektirmez, offline çalışır.
+53 test (+ policygate paketinde 35); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
+gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
+Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır.
 
 ## Satır sayıları (gerçek)
 
@@ -151,9 +169,10 @@ Playwright gerektirmez, offline çalışır.
 | core/ (store, http köprüsü, oauth) | 123 |
 | workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 834 |
 | orchestrator/cli.py (registry desenli) | 290 |
-| tests/ | 626 |
+| mcp_server/ (tool şeması, onay köprüsü, sunucu adaptörü) | 241 |
+| tests/ | 799 |
 | blender/ | 47 |
-| Python toplam | **1.920** |
+| Python toplam | **2.334** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
