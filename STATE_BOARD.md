@@ -7,6 +7,7 @@ release onayı eklendi. Offline testler 41+70+7 = 118 yeşil; MCP smoke 20 tool.
 Canlı Canva export için tasarım kimliği bekliyor.
 
 ## Son damgalar
+- 2026-10-30 · `b470d37` · Sprint 2 kod kapanışı: `request_bytes`, Canva onay/atomik indirme, audit seq+silme denetimi, release onayı ve `production_check.py` eklendi; 41+70+7=118 test, wheel kurulumu, 20 tool MCP smoke ve üretim kontrolü exit 0.
 - 2026-10-29 · `06f2832` · Sprint 1 kapanış: CI run `40924683743` 4/4 success; gerçek MCP smoke 20 tool, policygate wheel kurulumu `1.1.0`, 105 test yeşil.
 - 2026-10-29 · `c928653` · Sprint 1: policygate 1.1.0 wheel üretildi ve kuruldu, gerçek MCP smoke 20 tool exit 0, 105 test yeşil; PyPI workflow kaldırıldı, release komutu taslak modda.
 - 2026-10-29 · `586112b` · SSOT çekirdeği kuruldu: ANAYASA, tasarım manifestosu, sözlük, ajan kuralları ve Faz 2 sprint planı; sert LOC tavanı 9.000 (mevcut 7.816); 99 test yeşil.
