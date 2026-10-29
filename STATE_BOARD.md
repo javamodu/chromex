@@ -1,10 +1,11 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Sprint 1 kod kanıtı tamam. Taslak GitHub Release oluşturulmadı: depo
+Sprint 1 kod ve CI kanıtı tamam. Taslak GitHub Release oluşturulmadı: depo
 `PUBLIC`, kullanıcı dağıtım istemiyor; yalnızca yerel wheel hazır.
 
 ## Son damgalar
+- 2026-10-29 · `06f2832` · Sprint 1 kapanış: CI run `40924683743` 4/4 success; gerçek MCP smoke 20 tool, policygate wheel kurulumu `1.1.0`, 105 test yeşil.
 - 2026-10-29 · `c928653` · Sprint 1: policygate 1.1.0 wheel üretildi ve kuruldu, gerçek MCP smoke 20 tool exit 0, 105 test yeşil; PyPI workflow kaldırıldı, release komutu taslak modda.
 - 2026-10-29 · `586112b` · SSOT çekirdeği kuruldu: ANAYASA, tasarım manifestosu, sözlük, ajan kuralları ve Faz 2 sprint planı; sert LOC tavanı 9.000 (mevcut 7.816); 99 test yeşil.
 - 2026-10-29 · `ae7532e` · API model yönetimi eklendi: `glm-5.3` varsayılan, `codefastglm53unlimited` ücretsiz model olarak kayıt defterine alındı; 7 offline test yeşil (toplam 99).
