@@ -27,6 +27,26 @@ Katman 4  Görsel (ops.)  → npx vibe-kanban
 | `recete-b-taskmaster.sh` | PRD → görev ağacı → sıralı yürütme (Task Master) |
 | `docs/` | Planın tam metni ve katman anlatımı |
 
+## API model yönetimi
+
+`models.json`, Paseo üzerinden kullanılabilen sağlayıcı ve modelleri tutar.
+Varsayılan model **`glm-5.3`**; ücretsiz modeller arasında
+`codefastglm53unlimited` da vardır.
+
+- Tüm modelleri listelemek: `python model_manager.py list`
+- Varsayılan modeli görmek: `python model_manager.py default`
+- Ücretsiz modelleri listelemek: `python model_manager.py free`
+
+Yeni bir sağlayıcı veya model eklemek için `models.json` içindeki
+`providers` listesine yeni bir kayıt ekleyin. `default` alanı, açılışta
+kullanılacak model kimliğini belirler. Bozuk JSON, eksik `default` veya
+tekrar eden model kimliği durumunda kayıt defteri **hata verir**.
+
+Testler:
+```bash
+python -m unittest discover -s tests
+```
+
 ## Hızlı başlangıç (Reçete C — bu kitin ana yolu)
 
 ```bash

@@ -4,6 +4,7 @@
 Yok (Sprint 2 tamamlandı; tek insan işi PyPI trusted publisher kaydı).
 
 ## Son damgalar
+- 2026-10-29 · API model yönetimi eklendi: `glm-5.3` varsayılan, `codefastglm53unlimited` ücretsiz model olarak kayıt defterine alındı; 7 offline test yeşil (toplam 99).
 - 2026-10-29 · `4392b91` · Keskin kılıç seti: policygate 36/36 + wba 56/56 test yeşil (toplam 92); HTTP URL redaksiyonu, subprocess timeout, kamu CLI registry ve v1.1.0 senkronu tamam
 - 2026-10-25 · Sprint 2: `mcp_server/` adaptörü kuruldu — 20 CLI komutu MCP tool'ı, `MCPApprovalChannel` fail-closed onay köprüsü, `chromex-mcp` giriş noktası, `[mcp]` optional extra; testler 35+53=88 yeşil
 - 2026-10-12 · İskelet kuruldu (L1+L5+plans+kararlar+raporlar).

@@ -25,3 +25,6 @@ jobs:
       - name: wba testleri (56 adet, offline)
         working-directory: windows-browser-automation
         run: python -m unittest discover -s tests -v
+      - name: model yönetimi testleri (7 adet, offline)
+        working-directory: claude-code-automation
+        run: python -m unittest discover -s tests -v

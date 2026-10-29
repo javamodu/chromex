@@ -12,6 +12,8 @@ chromex/
 │   ├── README.md
 │   ├── ralph.sh                     → Ana döngü (taze context ile)
 │   ├── audit_bridge.py              → SHA-256 audit köprüsü
+│   ├── model_manager.py             → Paseo API model yönetimi (varsayılan: glm-5.3)
+│   ├── models.json                  → Sağlayıcı/model kayıt defteri
 │   ├── run-sandbox.sh               → Docker izolasyonu
 │   ├── PLAN.md / PROMPT.md / DECISIONS.md → Şablonlar
 │   └── docs/                        → Orkestrasyon planı
@@ -46,6 +48,7 @@ chromex/
 - ✅ Loop sistemi (ralph.sh)
 - ✅ Otomatik alt görev tanımlama
 - ✅ Rate-limit toleransı
+- ✅ Paseo model yönetimi (varsayılan `glm-5.3`)
 - ✅ PLAN.md → sıralı uygulama
 - ✅ Kararları DECISIONS.md'ye loglar
 - ✅ Docker sandbox desteği
@@ -122,6 +125,7 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
+**Toplam test:** 99 (policygate 36 + wba 56 + model yönetimi 7)
 **Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
 **Güncelleme:** 2026-10-08  

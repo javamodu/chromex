@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "default": "glm-5.3",
+  "providers": [
+    {
+      "id": "paseo",
+      "label": "Paseo",
+      "api": "paseo",
+      "free": true,
+      "models": [
+        {
+          "id": "glm-5.3",
+          "label": "GLM 5.3",
+          "free": true,
+          "default": true
+        },
+        {
+          "id": "codefastglm53unlimited",
+          "label": "CodeFast GLM 5.3 Unlimited",
+          "free": true
+        }
+      ]
+    }
+  ]
+}
