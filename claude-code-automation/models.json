@@ -3,20 +3,35 @@
   "default": "glm-5.3",
   "providers": [
     {
-      "id": "paseo",
-      "label": "Paseo",
-      "api": "paseo",
+      "id": "claude-glm",
+      "label": "Codefast GLM 5.3 günlük",
+      "api": "claude-glm",
       "free": true,
       "models": [
         {
           "id": "glm-5.3",
           "label": "GLM 5.3",
-          "free": true,
-          "default": true
+          "run_id": "glm-5.3",
+          "free": true
         },
+        {
+          "id": "glm-5.2",
+          "label": "GLM 5.2 yedek",
+          "run_id": "glm-5.2",
+          "free": true
+        }
+      ]
+    },
+    {
+      "id": "glm53u-codex",
+      "label": "GLM 5.3 sınırsız",
+      "api": "glm53u-codex",
+      "free": true,
+      "models": [
         {
           "id": "codefastglm53unlimited",
           "label": "CodeFast GLM 5.3 Unlimited",
+          "run_id": "glm-5.3",
           "free": true
         }
       ]

@@ -125,21 +125,20 @@ python -m orchestrator.cli son-kayitlar --limit 3
 
 **İşler**
 - `model_manager.py`'ye `sor` komutu ekle; yalnız kayıtlı model kullanır.
-- API anahtarı ortamdan okunur ve log'a asla basılmaz.
+- Kimlik doğrulamayı yerel Paseo CLI üstlenir; `PASEO_API_KEY` varsayımı geçersizdir.
 - Offline test: kayıt dışı model, hata yanıtı, secret redaksiyonu.
 - Teslim: sprint kanıtlarını `raporlar/2026-10-29-faz2/` altına yaz.
 
 **Canlı test**
 
 ```powershell
-$env:PASEO_API_KEY = "..."
 python claude-code-automation/model_manager.py default
-python claude-code-automation/model_manager.py sor "Kısa cevap: Chromex hazır mı?"
+python claude-code-automation/model_manager.py sor "Araç kullanma. Tek cümle: Chromex Sprint 4 hazır mı?"
 ```
 
 **Kabul**
 - Yanıt `glm-5.3`'ten gelir ve terminale yazılır.
-- API anahtarı çıktıda, auditte ve raporda görünmez.
+- Kimlik doğrulama Paseo CLI ile canlı olarak kanıtlandı.
 - Canlı test komutları ve exit kodları kalıcı rapora yazılır.
 - Çalışma ağacı temiz, CI yeşil, remote senkron.
 

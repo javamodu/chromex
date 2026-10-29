@@ -24,7 +24,7 @@ chromex/
 │   ├── README.md
 │   ├── ralph.sh                     → Ana döngü (taze context ile)
 │   ├── audit_bridge.py              → SHA-256 audit köprüsü
-│   ├── model_manager.py             → Paseo API model yönetimi (varsayılan: glm-5.3)
+│   ├── model_manager.py             → Paseo CLI model yönetimi ve `sor` komutu (varsayılan: glm-5.3)
 │   ├── models.json                  → Sağlayıcı/model kayıt defteri
 │   ├── run-sandbox.sh               → Docker izolasyonu
 │   ├── PLAN.md / PROMPT.md / DECISIONS.md → Şablonlar
@@ -37,7 +37,7 @@ chromex/
     ├── workers/                     → github, gmail, x, linkedin (API + CDP okuyucu), canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
     ├── mcp_server/                  → 20 CLI komutunu MCP tool'ına çevirir
-    ├── tests/                       → 62 birim test (core + worker + MCP + parite, offline)
+    │   ├── tests/                       → 75 birim test (core + worker + MCP + parite, offline)
     ├── config/                      → policy.json, MCP config (.env.example paket kökünde)
     └── scripts/                     → setup.ps1, Chrome başlat/durdur
 ```
@@ -60,7 +60,7 @@ chromex/
 - ✅ Loop sistemi (ralph.sh)
 - ✅ Otomatik alt görev tanımlama
 - ✅ Rate-limit toleransı
-- ✅ Paseo model yönetimi (varsayılan `glm-5.3`)
+- ✅ Paseo model yönetimi ve güvenli `sor` komutu (varsayılan `glm-5.3`)
 - ✅ PLAN.md → sıralı uygulama
 - ✅ Kararları DECISIONS.md'ye loglar
 - ✅ Docker sandbox desteği
@@ -139,8 +139,8 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
-**Toplam test:** 123 (policygate 41 + wba 75 + model yönetimi 7)
+**Toplam test:** 126 (policygate 41 + wba 75 + model yönetimi 10)
 **Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
-**Güncelleme:** 2026-10-29
-**Durum:** Çekirdek çalışır; Faz 2 canlı doğrulama sprintleri tanımlı
+**Güncelleme:** 2026-10-30
+**Durum:** Çekirdek çalışır; Faz 2 Sprint 4 model çağrısı canlı doğrulandı
