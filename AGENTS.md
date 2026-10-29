@@ -1,9 +1,32 @@
 # AGENTS.md — Chromex
 
-Bu depo iki bağımsız araç seti içerir:
+Bu depo üç bileşen içerir:
 
+- `policy-gate/` — güvenlik çekirdeği paketi
 - `claude-code-automation/` — ralph.sh ajan döngü kiti (bash + Python audit köprüsü)
 - `windows-browser-automation/` — API-öncelikli Python otomasyon paketi (aktif geliştirme burada)
+
+## SSOT haritası
+
+- `ANAYASA.md` — değişmez kurallar ve LOC tavanı
+- `AGENTS.md` — ajan çalışma kuralları
+- `DESIGN_MANIFESTO.md` — tasarım felsefesi
+- `GLOSSARY.md` — terim sözlüğü
+- `plans/FAZ2-SPRINTLER.md` — Faz 2 sprint planı
+- `README.md` — kullanıcı yüzeyi
+- `STATE_BOARD.md` — durum takibi
+
+Çelişki olursa `ANAYASA.md` kazanır.
+
+## LOC tavanı
+
+- Toplam: **9.000 LOC**
+- Kod: **5.000 LOC**
+- Doküman: **3.500 LOC**
+- Yapılandırma + destek: **300 LOC**
+
+Yeni iş açılmadan önce kalan bütçe kontrol edilir; tavan aşılamaz.
+Güncel bütçe ve sprint dağılımı: `ANAYASA.md` ve `plans/FAZ2-SPRINTLER.md`.
 
 ## Komutlar
 
@@ -14,6 +37,7 @@ Bu depo iki bağımsız araç seti içerir:
 | CI lokal taklit | iki suite'i de çalıştır; sayaçlar CI/README ile eşleşmeli |
 | CLI | `python -m orchestrator.cli <komut>` (paket kuruluysa `otomasyon <komut>`) |
 | Kurulum | `python -m pip install -e policy-gate` ardından `python -m pip install -e windows-browser-automation` |
+| Model yönetimi | `python claude-code-automation/model_manager.py default` |
 
 ## Kurallar
 
