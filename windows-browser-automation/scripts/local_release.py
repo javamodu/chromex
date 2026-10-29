@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from policygate import ActionRequest, require
+
 
 WHEEL_PATTERN = re.compile(
     r"^policy_gate-(\d+\.\d+\.\d+)-py3-none-any\.whl$"
@@ -58,6 +60,18 @@ def release_command(repo_root: Path, wheel: Path, tag: str) -> list[str]:
     ]
 
 
+def execute_release(repo_root: Path, wheel: Path, tag: str,
+                    command: list[str]) -> None:
+    require(ActionRequest(
+        worker="policygate",
+        action="policygate.local_release",
+        level="MODIFY",
+        summary="GitHub taslak release oluşturulacak.",
+        details={"tag": tag, "wheel": wheel.name},
+    ))
+    subprocess.run(command, cwd=repo_root, check=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Yerel policygate wheel derleme ve GitHub Release hazirligi."
@@ -84,7 +98,7 @@ def main() -> int:
             wheel = build_wheel(repo_root, policy_root)
         command = release_command(repo_root, wheel, args.tag)
         if args.execute:
-            subprocess.run(command, cwd=repo_root, check=True)
+            execute_release(repo_root, wheel, args.tag, command)
         else:
             print(" ".join(command))
     except (OSError, ValueError, subprocess.CalledProcessError) as exc:

@@ -19,9 +19,9 @@ Bu depo için **sert tavan** aşağıdadır:
 
 | Tür | Tavan | Mevcut | Kalan |
 |---|---:|---:|---:|
-| Toplam | 9.000 | 8.122 | 878 |
-| Kod | 5.000 | 4.506 | 494 |
-| Doküman | 3.500 | 3.360 | 140 |
+| Toplam | 9.000 | 8.455 | 545 |
+| Kod | 5.000 | 4.831 | 169 |
+| Doküman | 3.500 | 3.368 | 132 |
 | Yapılandırma + destek | 300 | 256 | 44 |
 
 Mevcut ölçüm 2026-10-29'de `git ls-files --cached --others

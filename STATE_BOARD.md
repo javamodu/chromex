@@ -1,8 +1,10 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Sprint 1 kod ve CI kanıtı tamam. Taslak GitHub Release oluşturulmadı: depo
-`PUBLIC`, kullanıcı dağıtım istemiyor; yalnızca yerel wheel hazır.
+Sprint 2 kod ve üretim kontrol tarafı tamam: `request_bytes`, Canva onay
+kapısı, atomik indirme, kısmi dosya temizliği, audit seq/silme denetimi ve
+release onayı eklendi. Offline testler 41+70+7 = 118 yeşil; MCP smoke 20 tool.
+Canlı Canva export için tasarım kimliği bekliyor.
 
 ## Son damgalar
 - 2026-10-29 · `06f2832` · Sprint 1 kapanış: CI run `40924683743` 4/4 success; gerçek MCP smoke 20 tool, policygate wheel kurulumu `1.1.0`, 105 test yeşil.

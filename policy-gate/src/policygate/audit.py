@@ -127,9 +127,17 @@ def log_event(
 
 
 def verify_chain() -> tuple[bool, str]:
-    """Tüm zinciri baştan doğrular: (sağlam mı, mesaj)."""
+    """Tüm zinciri baştan doğrular: (sağlam mı, mesaj).
+
+    Seq sürekliliği sonradan kırpılan kayıtları yakalar; kilit dosyası
+    audit.jsonl silindikten sonra duruyorsa zincirin bir kez yazıldığını
+    kanıtlar.
+    """
     path = _audit_file()
+    lock_path = path.with_suffix(".lock")
     if not path.exists():
+        if lock_path.exists():
+            return False, "Audit dosyası yok ama kilit duruyor — silinmiş olabilir."
         return True, "Audit dosyası yok; zincir boş."
     prev, n = _GENESIS, 0
     with path.open(encoding="utf-8") as fh:
@@ -143,6 +151,8 @@ def verify_chain() -> tuple[bool, str]:
             body = {k: v for k, v in rec.items() if k != "hash"}
             if rec.get("prev_hash") != prev or rec.get("hash") != _record_hash(prev, body):
                 return False, f"Zincir {i}. satırda bozuk (seq={rec.get('seq')})."
+            if rec.get("seq") != n + 1:
+                return False, f"Zincir {i}. satırda seq boşluğu (seq={rec.get('seq')}, beklenen={n + 1})."
             prev = rec["hash"]
             n += 1
     return True, f"Zincir sağlam: {n} kayıt."

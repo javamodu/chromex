@@ -42,13 +42,15 @@ def _wait_seconds(attempt: int, retry_after: str | None) -> float:
 
 
 def _redact_url(url: str) -> str:
-    """Audit kayitlari icin URL'nin sorgu bolumunu tamamen maskeler."""
+    """Audit ve hata yüzeyleri için URL userinfo ve sorguyu maskeler."""
     parsed = urlsplit(url)
+    if parsed.username is not None or parsed.password is not None:
+        parsed = parsed._replace(netloc="***")
     masked_query = "***" if parsed.query else ""
     return secrets.redact(urlunsplit(parsed._replace(query=masked_query)))
 
 
-def request_json(
+def _request_response(
     method: str,
     url: str,
     worker: str,
@@ -74,15 +76,15 @@ def request_json(
         except requests.RequestException as exc:
             if attempt >= max_retries:
                 raise HttpError(
-                    f"{method.upper()} {url} ağ hatası "
-                    f"({attempt + 1} deneme): {exc}") from exc
+                    f"{method.upper()} {audit_url} ağ hatası "
+                    f"({attempt + 1} deneme): {secrets.redact(str(exc))}") from exc
             wait = _wait_seconds(attempt, None)
             audit.log_event("http_retry", worker, level, "auto", {
                 "url": audit_url, "neden": type(exc).__name__,
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
             _log.warning(  # sessiz bekleyis tuzagi: varsayilan seviyede gorunur
-            "%s ağ hatası — %.1fs sonra tekrar (%d/%d)",
-                      url, wait, attempt + 1, max_retries + 1)
+                "%s %s ağ hatası — %.1fs sonra tekrar (%d/%d)",
+                method.upper(), audit_url, wait, attempt + 1, max_retries + 1)
             time.sleep(wait)
             attempt += 1
             continue
@@ -98,28 +100,71 @@ def request_json(
                 "url": audit_url, "neden": f"HTTP {resp.status_code}",
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
             _log.warning(  # sessiz bekleyis tuzagi: varsayilan seviyede gorunur
-            "%s HTTP %s — %.1fs sonra tekrar (%d/%d)",
-                      url, resp.status_code, wait, attempt + 1, max_retries + 1)
+                "%s %s HTTP %s — %.1fs sonra tekrar (%d/%d)",
+                method.upper(), audit_url, resp.status_code, wait,
+                attempt + 1, max_retries + 1)
             time.sleep(wait)
             attempt += 1
             continue
 
-        if resp.status_code >= 400:
-            raise HttpError(
-                f"{method.upper()} {url} -> {resp.status_code} "
-                f"({attempt + 1} deneme): {secrets.redact(resp.text[:300])}")
+        return resp
 
-        if not resp.content:
-            return resp  # 204 No Content vb. gövdesiz başarı
-        content_type = resp.headers.get("Content-Type", "")
-        if "json" not in content_type.lower():
-            raise HttpError(
-                f"{method.upper()} {url} -> {resp.status_code} ama gövde JSON "
-                f"değil (Content-Type: {content_type or 'yok'}): "
-                f"{secrets.redact(resp.text[:200])}")
-        try:
-            return resp.json()
-        except ValueError as exc:
-            raise HttpError(
-                f"{method.upper()} {url} -> geçersiz JSON gövdesi: "
-                f"{secrets.redact(resp.text[:200])}") from exc
+
+def request_json(
+    method: str,
+    url: str,
+    worker: str,
+    *,
+    headers: dict[str, str] | None = None,
+    params: dict[str, Any] | None = None,
+    json_body: dict[str, Any] | None = None,
+    timeout: int = 30,
+    level: str = "READ",
+    max_retries: int = 3,
+) -> Any:
+    resp = _request_response(
+        method, url, worker, headers=headers, params=params,
+        json_body=json_body, timeout=timeout, level=level,
+        max_retries=max_retries)
+    if resp.status_code >= 400:
+        raise HttpError(
+            f"{method.upper()} {_redact_url(url)} -> {resp.status_code}: "
+            f"{secrets.redact(resp.text)[:300]}")
+    if not resp.content:
+        return resp  # 204 No Content vb. gövdesiz başarı
+    content_type = resp.headers.get("Content-Type", "")
+    if "json" not in content_type.lower():
+        raise HttpError(
+            f"{method.upper()} {_redact_url(url)} -> {resp.status_code} "
+            f"ama gövde JSON değil (Content-Type: "
+            f"{content_type or 'yok'}): {secrets.redact(resp.text)[:200]}")
+    try:
+        return resp.json()
+    except ValueError as exc:
+        raise HttpError(
+            f"{method.upper()} {_redact_url(url)} -> geçersiz JSON gövdesi: "
+            f"{secrets.redact(resp.text)[:200]}") from exc
+
+
+def request_bytes(
+    method: str,
+    url: str,
+    worker: str,
+    *,
+    headers: dict[str, str] | None = None,
+    params: dict[str, Any] | None = None,
+    json_body: dict[str, Any] | None = None,
+    timeout: int = 30,
+    level: str = "READ",
+    max_retries: int = 3,
+) -> bytes:
+    """Bayt indirmesi için aynı retry/audit/redaksiyon akışını kullanır."""
+    resp = _request_response(
+        method, url, worker, headers=headers, params=params,
+        json_body=json_body, timeout=timeout, level=level,
+        max_retries=max_retries)
+    if resp.status_code >= 400:
+        raise HttpError(
+            f"{method.upper()} {_redact_url(url)} -> {resp.status_code}: "
+            f"{secrets.redact(resp.text)[:300]}")
+    return resp.content

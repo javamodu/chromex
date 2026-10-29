@@ -11,6 +11,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
+from policygate import ApprovalDenied
+
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 
@@ -130,6 +132,30 @@ class LocalReleaseTests(unittest.TestCase):
         with mock.patch.object(self.module.subprocess, "run") as run:
             self.assertEqual(self.module.build_wheel(self.repo, self.policy), wheel)
         run.assert_called_once_with(expected, cwd=self.repo, check=True)
+
+    def test_execute_onaysiz_subprocess_cagirmaz(self):
+        wheel = self.dist / "policy_gate-1.1.0-py3-none-any.whl"
+        wheel.write_bytes(b"wheel")
+        command = self.module.release_command(self.repo, wheel, "v1.1.0")
+        with mock.patch.object(self.module, "require") as require_mock, \
+             mock.patch.object(self.module.subprocess, "run") as run:
+            self.module.execute_release(self.repo, wheel, "v1.1.0", command)
+        require_mock.assert_called_once()
+        run.assert_called_once_with(command, cwd=self.repo, check=True)
+
+    def test_execute_reddedilince_subprocess_cagirmaz(self):
+        wheel = self.dist / "policy_gate-1.1.0-py3-none-any.whl"
+        wheel.write_bytes(b"wheel")
+        command = self.module.release_command(self.repo, wheel, "v1.1.0")
+        with mock.patch.object(
+                self.module, "require",
+                side_effect=ApprovalDenied("red")) as require_mock, \
+             mock.patch.object(self.module.subprocess, "run") as run:
+            with self.assertRaises(ApprovalDenied):
+                self.module.execute_release(
+                    self.repo, wheel, "v1.1.0", command)
+        require_mock.assert_called_once()
+        run.assert_not_called()
 
 
 if __name__ == "__main__":

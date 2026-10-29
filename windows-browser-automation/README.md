@@ -180,11 +180,12 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-62 test (+ policygate paketinde 36); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+70 test (+ policygate paketinde 41); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
 gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
 Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır; canlı MCP
-smoke testi ayrıca `scripts\mcp_smoke.py` ile koşar.
+smoke testi ayrıca `scripts\mcp_smoke.py` ile koşar; üretim öncesi
+toplu kontrol `python scripts\production_check.py` ile yapılır.
 
 ## Yerel wheel ve GitHub Release
 

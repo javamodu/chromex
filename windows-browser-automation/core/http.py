@@ -3,6 +3,6 @@
 `requests` bağımlılığı policygate[http] extra'sı üzerinden gelir; wba'nın
 requirements.txt zaten requests içerdiğinden davranış değişmez.
 """
-from policygate.http import HttpError, request_json
+from policygate.http import HttpError, request_bytes, request_json
 
-__all__ = ["HttpError", "request_json"]
+__all__ = ["HttpError", "request_bytes", "request_json"]

@@ -17,10 +17,8 @@ async def _run_smoke(
     stdio_client: Any,
 ) -> int:
     package_root = Path(__file__).resolve().parents[1]
-    policygate_src = package_root.parent / "policy-gate" / "src"
     environment = os.environ.copy()
     python_path = [
-        str(policygate_src),
         str(package_root),
         environment.get("PYTHONPATH", ""),
     ]

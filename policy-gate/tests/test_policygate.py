@@ -67,6 +67,29 @@ class AuditTests(TempEnvTestCase):
         ok, msg = audit.verify_chain()
         self.assertTrue(ok, msg)
 
+    def test_seq_boslugu_kirpma_kaniti_verir(self):
+        audit.log_event("a", "test", "READ", "auto", {})
+        rec = audit.log_event("b", "test", "READ", "auto", {})
+        path = audit._audit_file()
+        satirlar = path.read_text(encoding="utf-8").splitlines()
+        kayit = json.loads(satirlar[1])
+        kayit["seq"] = 3
+        govde = {k: v for k, v in kayit.items() if k != "hash"}
+        kayit["hash"] = audit._record_hash(kayit["prev_hash"], govde)
+        satirlar[1] = audit._canonical(kayit)
+        path.write_text("\n".join(satirlar) + "\n", encoding="utf-8")
+        ok, msg = audit.verify_chain()
+        self.assertFalse(ok)
+        self.assertIn("seq boşluğu", msg)
+
+    def test_dosya_silinmesi_lock_ile_tespit_edilir(self):
+        audit.log_event("a", "test", "READ", "auto", {})
+        path = audit._audit_file()
+        path.unlink()
+        ok, msg = audit.verify_chain()
+        self.assertFalse(ok)
+        self.assertIn("silinmiş olabilir", msg)
+
 
 class PolicyTests(TempEnvTestCase):
     def test_varsayilanlar(self):

@@ -320,15 +320,47 @@ class CanvaWorkerTests(WorkerTestCase):
     def test_export_basarili_indirir(self):
         start = {"job": {"id": "j1"}}
         done = {"job": {"status": "success", "urls": ["https://cdn/f.pdf"]}}
-        resp = mock.Mock(content=b"PDFBYTES")
         with mock.patch.object(self.worker, "request_json",
                                side_effect=[start, done]), \
              mock.patch.object(self.worker, "POLL_SANIYE", 0), \
-             mock.patch("requests.get", return_value=resp):
+             mock.patch.object(self.worker, "request_bytes",
+                               return_value=b"PDFBYTES") as req, \
+             mock.patch("requests.get",
+                        side_effect=AssertionError("doğrudan requests kullanıldı")):
             paths = self.worker.export_design("d1", "pdf", out_dir="data/canva")
+        req.assert_called_once_with("GET", "https://cdn/f.pdf",
+                                    self.worker.WORKER, timeout=120,
+                                    level='DRAFT')
         self.assertEqual(len(paths), 1)
         self.assertEqual(paths[0].read_bytes(), b"PDFBYTES")
         self.assertTrue(str(paths[0]).endswith("d1-0.pdf"))
+        icerik = audit._audit_file().read_text(encoding="utf-8")
+        self.assertIn("canva_export_done", icerik)
+
+    def test_indirme_hatasi_kismi_dosya_temizler(self):
+        start = {"job": {"id": "j1"}}
+        done = {"job": {"status": "success",
+                        "urls": ["https://cdn/1.pdf", "https://cdn/2.pdf"]}}
+        with mock.patch.object(self.worker, "request_json",
+                               side_effect=[start, done]), \
+             mock.patch.object(self.worker, "POLL_SANIYE", 0), \
+             mock.patch.object(self.worker, "request_bytes",
+                               side_effect=[b"BIR", RuntimeError("ikinci koptu")]):
+            with self.assertRaises(RuntimeError):
+                self.worker.export_design("d1", "pdf", out_dir="data/canva")
+        self.assertEqual(list(Path("data/canva").glob("*")), [])
+
+    def test_indirme_bos_dosya_temizler(self):
+        start = {"job": {"id": "j1"}}
+        done = {"job": {"status": "success", "urls": ["https://cdn/f.pdf"]}}
+        with mock.patch.object(self.worker, "request_json",
+                               side_effect=[start, done]), \
+             mock.patch.object(self.worker, "POLL_SANIYE", 0), \
+             mock.patch.object(self.worker, "request_bytes",
+                               return_value=b""):
+            with self.assertRaises(RuntimeError):
+                self.worker.export_design("d1", "pdf", out_dir="data/canva")
+        self.assertEqual(list(Path("data/canva").glob("*")), [])
 
     def test_export_failed_runtimeerror(self):
         start = {"job": {"id": "j1"}}

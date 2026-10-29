@@ -122,8 +122,8 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + MCP sunucusu + 62 test |
-| policygate | ✅ v1.1.0 (güncel) | 6 modül + 36 test (docs/policy-gate-taslak.md) |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + MCP sunucusu + 70 test |
+| policygate | ✅ v1.1.0 (güncel) | 6 modül + 41 test (docs/policy-gate-taslak.md) |
 
 Faz 2 sprintleri: `plans/FAZ2-SPRINTLER.md`
 
@@ -139,7 +139,7 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
-**Toplam test:** 105 (policygate 36 + wba 62 + model yönetimi 7)
+**Toplam test:** 118 (policygate 41 + wba 70 + model yönetimi 7)
 **Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
 **Güncelleme:** 2026-10-29

@@ -120,6 +120,39 @@ class HttpRetryTests(unittest.TestCase):
         self.assertIs(self.http.request_json("DELETE", "https://x/a", "test"),
                       resp)
 
+    def test_request_bytes_500_sonra_bayt_doner(self):
+        ilk = _FakeResp(500)
+        basari = _FakeResp(200, {})
+        basari.content = b'PDFBYTES'
+        basari.headers['Content-Type'] = 'application/pdf'
+        self.queue[:] = [ilk, basari]
+        data = self.http.request_bytes('GET', 'https://x/a', 'test')
+        self.assertEqual(data, b'PDFBYTES')
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self._sleep.call_count, 1)
+
+    def test_request_bytes_ag_hatasi_sonra_basari(self):
+        basari = _FakeResp(200, {})
+        basari.content = b'PDFBYTES'
+        basari.headers['Content-Type'] = 'application/pdf'
+        self.queue[:] = [self.fake.RequestException('kopma'), basari]
+        data = self.http.request_bytes('GET', 'https://x/a', 'test')
+        self.assertEqual(data, b'PDFBYTES')
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(self._sleep.call_count, 1)
+
+    def test_request_bytes_hata_govdesinde_secret_maskelenir(self):
+        os.environ['HTTP_BYTES_TOKEN'] = 'super-gizli-deger-8'
+        secrets.get('HTTP_BYTES_TOKEN')
+        resp = _FakeResp(404)
+        resp.text = 'hata: super-gizli-deger-8 sizdi'
+        resp.content = resp.text.encode()
+        self.queue[:] = [resp]
+        with self.assertRaises(self.http.HttpError) as ctx:
+            self.http.request_bytes('GET', 'https://x/a', 'test')
+        self.assertNotIn('super-gizli-deger-8', str(ctx.exception))
+        self.assertIn('***', str(ctx.exception))
+
     def test_hata_govdesinde_secret_maskelenir(self):
         os.environ["HTTP_TEST_TOKEN"] = "super-gizli-deger-9"
         secrets.get("HTTP_TEST_TOKEN")

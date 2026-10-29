@@ -18,14 +18,14 @@ açmak, görsel panel yazmak veya geniş refactor yapmak yoktur.
 | 3 — Zamanlayıcı + canlı koşum | 210 | 40 | 0 | 250 |
 | 4 — Model API canlı çağrı + teslim | 110 | 50 | 0 | 160 |
 | **Plan toplamı** | **740** | **170** | **0** | **910** |
-| **Kategori bütçesi kalır** | 494 | 140 | 44 | — |
+| **Kategori bütçesi kalır** | 169 | 132 | 44 | — |
 
-Toplam tavanın kalan payı **878 LOC**'dir; bunun **641 LOC**'u yalnız toplam
+Toplam tavanın kalan payı **545 LOC**'dir; bunun **195 LOC**'u yalnız toplam
 tavanından gelir. Kategori bütçeleri ayrı olarak bağlayıcıdır.
 
 Tavan dağılımı: 5.000 kod / 3.500 doküman / 300 yapılandırma ve destek.
 Sprint toplamları tavanı değil, tavanın altındaki hedef bütçeyi gösterir.
-Yapılandırma satırı 12 LOC kalıncaya kadar kullanılmıştır; yeni config
+Yapılandırma satırı 44 LOC kalıncaya kadar kullanılmıştır; yeni config
 dosyası açılmaz.
 
 ## Sprint kuralları
@@ -75,6 +75,8 @@ python scripts/local_release.py --tag v1.1.0
 - `policygate.http`'ye `request_bytes` ekle; retry, redaksiyon ve audit korunsun.
 - `canva_worker._download` doğrudan `requests` kullanmayı bırak.
 - İndirme hataları ve kısmi dosya temizliği için offline testler ekle.
+- `local_release.py --execute` için MODIFY onay kapısı ekle.
+- `scripts/production_check.py` ile sürüm, policy, audit ve registry doğrula.
 - Canlı akış için tasarım kimliği insan tarafından sağlanır.
 
 **Canlı test**
@@ -91,6 +93,7 @@ python -m orchestrator.cli audit-dogrula
 - Dosya adı tasarım kimliğini taşır.
 - Audit zinciri sağlamdır.
 - Secret çıktıda görünmez.
+- `production_check.py` exit 0 döner.
 
 ## Sprint 3 — Zamanlayıcı ve canlı koşum
 
@@ -114,7 +117,7 @@ python -m orchestrator.cli son-kayitlar --limit 3
 - Zamanlanmış READ komutu gerçek CLI çağrısıyla exit 0 döner.
 - Sonuç SQLite deposunda görünür.
 - SEND/DELETE job reddedilir ve red audit'e yazılır.
-- Offline testler 105+ seviyesine çıkar; sayaç senkronu güncellenir.
+- Offline testler 118+ seviyesine çıkar; sayaç senkronu güncellenir.
 
 ## Sprint 4 — Model API canlı çağrı ve teslim
 
