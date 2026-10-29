@@ -1,7 +1,8 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Yok (SSOT çekirdeği tamamlandı; Faz 2 Sprint 1 hazır).
+- bekci raporu: raporlar/takip-sozlesme/2026-10-29.md (untracked — commit bekliyor)
+Yok (PyPI ertelendi; Faz 2 Sprint 1 yerel wheel + GitHub Release için hazır).
 
 ## Son damgalar
 - 2026-10-29 · `586112b` · SSOT çekirdeği kuruldu: ANAYASA, tasarım manifestosu, sözlük, ajan kuralları ve Faz 2 sprint planı; sert LOC tavanı 9.000 (mevcut 7.816); 99 test yeşil.
@@ -12,4 +13,4 @@ Yok (SSOT çekirdeği tamamlandı; Faz 2 Sprint 1 hazır).
 - 2026-10-14 · Gece vardiyası: 2 subagent (CLI insan-testi + drift/plugin) → QA raporu %100 kapandı: 5/5 P1 (EOF fail-closed, tek-satır hata, cp1252, preflight kapısı, google import guardu) + 6/6 işlevsel P2 (BOM toleransı, retry görünürlüğü, exit 3, boş-sonuç mesajı, ok karakterleri, arg help'leri); testler 35+42=77 yeşil; plugin iskeleti kuruldu (.claude-plugin + skills/chromex-sozlesme)
 
 ## Bekleyen onaylar
-- PyPI trusted publisher kaydı (insan işi): policy-gate / javamodu / chromex / publish-policygate.yml / env `pypi`; sonra `gh run rerun --failed`.
+Yok. PyPI ertelendi.

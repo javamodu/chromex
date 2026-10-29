@@ -5,7 +5,7 @@
 
 ## Kapsam
 
-Faz 2, ürünleşme kanıtı üretir: paket yayın doğrulaması, gerçek MCP
+Faz 2, ürünleşme kanıtı üretir: yerel wheel doğrulaması, gerçek MCP
 istemcisi, gerçek Canva export akışı ve küçük bir zamanlayıcı. Yeni entegrasyon
 açmak, görsel panel yazmak veya geniş refactor yapmak yoktur.
 
@@ -13,14 +13,14 @@ açmak, görsel panel yazmak veya geniş refactor yapmak yoktur.
 
 | Sprint | Kod | Doküman | Yapılandırma | Toplam |
 |---|---:|---:|---:|---:|
-| 1 — PyPI + MCP canlı kanıt | 180 | 40 | 0 | 220 |
+| 1 — Yerel wheel + MCP canlı kanıt | 180 | 40 | 0 | 220 |
 | 2 — Canva canlı export | 240 | 40 | 0 | 280 |
 | 3 — Zamanlayıcı + canlı koşum | 210 | 40 | 0 | 250 |
 | 4 — Model API canlı çağrı + teslim | 110 | 50 | 0 | 160 |
 | **Plan toplamı** | **740** | **170** | **0** | **910** |
-| **Kategori bütçesi kalır** | 50 | 13 | 12 | — |
+| **Kategori bütçesi kalır** | 494 | 140 | 44 | — |
 
-Toplam tavanın kalan payı **275 LOC**'dir; bunun **200 LOC**'u yalnız toplam
+Toplam tavanın kalan payı **878 LOC**'dir; bunun **641 LOC**'u yalnız toplam
 tavanından gelir. Kategori bütçeleri ayrı olarak bağlayıcıdır.
 
 Tavan dağılımı: 5.000 kod / 3.500 doküman / 300 yapılandırma ve destek.
@@ -37,30 +37,35 @@ dosyası açılmaz.
 5. SEND/DELETE canlı testi yalnızca insan onayıyla koşar.
 6. Sprint bitince `STATE_BOARD.md`'e commit hash'li tek satır damga atılır.
 
-## Sprint 1 — PyPI + gerçek MCP istemcisi
+## Sprint 1 — Yerel wheel + gerçek MCP istemcisi
 
-**Hedef:** policygate'i PyPI'dan kur, chromex-mcp'yi gerçek MCP SDK ile doğrula.
+**Hedef:** policygate wheel'ini yerelde derle, GitHub Release'e ekle, chromex-mcp'yi gerçek MCP SDK ile doğrula.
 
 **İşler**
-- İnsan: PyPI trusted publisher kaydını onayla.
-- Yayın: `v1.1.0` GitHub Release aç ve yayın workflow'unu çalıştır.
+- Yerel: `python -m build ./policy-gate` ile wheel üret.
+- Yayın: `v1.1.0` için taslak GitHub Release'e wheel'i ekle; PyPI kullanılmaz.
 - Kod: `scripts/mcp_smoke.py` ile stdio üzerinden 20 tool listele.
 - Doküman: kullanıcıya MCP client yapılandırma örneği README'ye ekle.
 
 **Canlı test**
 
 ```powershell
-python -m pip install --force-reinstall policy-gate==1.1.0
+cd windows-browser-automation
+python -m pip install build
+python -m build ../policy-gate
+python -m pip install --force-reinstall ../policy-gate/dist/policy_gate-1.1.0-py3-none-any.whl
 python -c 'import policygate; assert policygate.__version__ == "1.1.0"'
 python -m pip install -e ".[mcp]"
 python scripts/mcp_smoke.py
+python scripts/local_release.py --tag v1.1.0
 ```
 
 **Kabul**
-- PyPI sayfasında `policy-gate 1.1.0` görünür.
-- Temiz ortamda import başarılı.
+- `policy-gate/dist/` içinde 1.1.0 wheel bulunur.
+- GitHub Release `v1.1.0` wheel dosyasını içerir.
+- Yerel wheel kurulumu ve import başarılı.
 - `mcp_smoke.py` exit 0 döner ve 20 tool listeler.
-- Offline testler 36+56+7 = 99 geçer.
+- Offline testler 36+62+7 = 105 geçer.
 
 ## Sprint 2 — Canva gerçek export
 

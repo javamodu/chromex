@@ -62,7 +62,7 @@ Güncel bütçe ve sprint dağılımı: `ANAYASA.md` ve `plans/FAZ2-SPRINTLER.md
   `[project.optional-dependencies]` extra'sı olarak eklenir (ör. `policy-gate[http]`).
 - **Sayaç senkronu:** Test ekleyen/silen, test sayaçlarını aynı commit'te günceller
   (`.github/workflows/test.yml`, kök README, wba README).
-- **Sürüm/Release:** semver; tag `vX.Y.Z`; release GitHub'dan açılır →
-  `publish-policygate.yml` PyPI'a iner (trusted publisher).
+- **Sürüm/Release:** semver; tag `vX.Y.Z`; GitHub Release + wheel kullanılır.
+  PyPI ertelenmiştir; dağıtım kararı değişirse yeni karar kaydı açılır.
 - **Gizli veri:** `.env`, `audit/`, `data/` hiçbir zaman commit'lenmez
   (`.gitignore`'a değil, bu kurala güven).

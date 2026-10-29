@@ -75,6 +75,25 @@ pip install -e .[mcp]
 chromex-mcp
 ```
 
+Gerçek istemciden hızlı doğrulama:
+
+```powershell
+python scripts\mcp_smoke.py
+```
+
+Örnek MCP client kaydı:
+
+```json
+{
+  "mcpServers": {
+    "chromex": {
+      "command": "chromex-mcp",
+      "args": []
+    }
+  }
+}
+```
+
 - Adaptör `mcp_server/` altında; CLI çekirdeği değişmez, tool çağrıları
   yine `orchestrator.cli.main()` üzerinden geçer.
 - Onay/audit tek kaynağı `policygate` kalır. Standalone sunucuda onay
@@ -161,10 +180,22 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-56 test (+ policygate paketinde 36); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+62 test (+ policygate paketinde 36); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
 gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
-Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır.
+Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır; canlı MCP
+smoke testi ayrıca `scripts\mcp_smoke.py` ile koşar.
+
+## Yerel wheel ve GitHub Release
+
+```powershell
+python -m pip install build
+python scripts\local_release.py --tag v1.1.0
+```
+
+Komut wheel'i üretir ve **taslak** GitHub Release komutunu yazdırır. `--execute`
+yalnızca taslağı oluşturur; yayınlama insan onayıyla GitHub arayüzünden yapılır.
+PyPI kullanılmaz.
 
 ## Satır sayıları (gerçek)
 
@@ -174,9 +205,10 @@ Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır.
 | workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 840 |
 | orchestrator/cli.py (registry desenli) | 295 |
 | mcp_server/ (tool şeması, onay köprüsü, sunucu adaptörü) | 248 |
-| tests/ | 825 |
+| scripts/ (MCP smoke, yerel release) | 157 |
+| tests/ | 960 |
 | blender/ | 47 |
-| Python toplam | **2.378** |
+| Python toplam | **2.670** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
