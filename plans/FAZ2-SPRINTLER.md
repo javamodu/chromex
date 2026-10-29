@@ -18,9 +18,9 @@ açmak, görsel panel yazmak veya geniş refactor yapmak yoktur.
 | 3 — Zamanlayıcı + canlı koşum | 210 | 40 | 0 | 250 |
 | 4 — Model API canlı çağrı + teslim | 110 | 50 | 0 | 160 |
 | **Plan toplamı** | **740** | **170** | **0** | **910** |
-| **Kategori bütçesi kalır** | 169 | 132 | 44 | — |
+| **Kategori bütçesi kalır** | 0 | 131 | 44 | — |
 
-Toplam tavanın kalan payı **545 LOC**'dir; bunun **195 LOC**'u yalnız toplam
+Toplam tavanın kalan payı **375 LOC**'dir; bunun **200 LOC**'u yalnız toplam
 tavanından gelir. Kategori bütçeleri ayrı olarak bağlayıcıdır.
 
 Tavan dağılımı: 5.000 kod / 3.500 doküman / 300 yapılandırma ve destek.
@@ -44,7 +44,7 @@ dosyası açılmaz.
 **İşler**
 - Yerel: `python -m build ./policy-gate` ile wheel üret.
 - Yayın: `v1.1.0` için taslak GitHub Release'e wheel'i ekle; PyPI kullanılmaz.
-- Kod: `scripts/mcp_smoke.py` ile stdio üzerinden 20 tool listele.
+- Kod: `scripts/mcp_smoke.py` ile stdio üzerinden 21 tool listele.
 - Doküman: kullanıcıya MCP client yapılandırma örneği README'ye ekle.
 
 **Canlı test**
@@ -64,7 +64,7 @@ python scripts/local_release.py --tag v1.1.0
 - `policy-gate/dist/` içinde 1.1.0 wheel bulunur.
 - GitHub Release `v1.1.0` wheel dosyasını içerir.
 - Yerel wheel kurulumu ve import başarılı.
-- `mcp_smoke.py` exit 0 döner ve 20 tool listeler.
+- `mcp_smoke.py` exit 0 döner ve 21 tool listeler.
 - Offline testler 36+62+7 = 105 geçer.
 
 ## Sprint 2 — Canva gerçek export
@@ -117,7 +117,7 @@ python -m orchestrator.cli son-kayitlar --limit 3
 - Zamanlanmış READ komutu gerçek CLI çağrısıyla exit 0 döner.
 - Sonuç SQLite deposunda görünür.
 - SEND/DELETE job reddedilir ve red audit'e yazılır.
-- Offline testler 118+ seviyesine çıkar; sayaç senkronu güncellenir.
+- Offline testler 123+ seviyesine çıkar; sayaç senkronu güncellenir.
 
 ## Sprint 4 — Model API canlı çağrı ve teslim
 

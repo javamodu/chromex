@@ -242,6 +242,13 @@ def _audit_dogrula(args):
     return 0 if ok else 1
 
 
+@command("zamanla", "Dosyadaki işi tek seferlik çalıştır",
+         (("--dosya", {"required": True, "help": "JSON iş tanımı"}),))
+def _zamanla(args):
+    from workers import scheduler
+    return scheduler.run_job(args.dosya)
+
+
 # --- Derleme + çalıştırma -------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:

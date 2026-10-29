@@ -22,7 +22,7 @@ jobs:
       - name: policygate testleri (41 adet, offline)
         working-directory: policy-gate
         run: python -m unittest discover -s tests -v
-      - name: wba testleri (70 adet, offline)
+      - name: wba testleri (75 adet, offline)
         working-directory: windows-browser-automation
         run: python -m unittest discover -s tests -v
       - name: Sprint 1 canlı MCP smoke

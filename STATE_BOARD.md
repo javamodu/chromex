@@ -1,10 +1,10 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Sprint 2 kod ve üretim kontrol tarafı tamam: `request_bytes`, Canva onay
-kapısı, atomik indirme, kısmi dosya temizliği, audit seq/silme denetimi ve
-release onayı eklendi. Offline testler 41+70+7 = 118 yeşil; MCP smoke 20 tool.
-Canlı Canva export için tasarım kimliği bekliyor.
+Sprint 3 kod ve canlı koşum tamam: dosya tabanlı zamanlayıcı, `zamanla` CLI
+komutu, READ/DRAFT sıkıştırması, audit ve SQLite kaydı eklendi. Offline
+testler 41+75+7 = 123 yeşil; MCP smoke 21 tool; canlı GitHub koşumu exit 0.
+Canlı Canva export için tasarım kimliği hâlâ bekliyor.
 
 ## Son damgalar
 - 2026-10-30 · `b470d37` · Sprint 2 kod kapanışı: `request_bytes`, Canva onay/atomik indirme, audit seq+silme denetimi, release onayı ve `production_check.py` eklendi; 41+70+7=118 test, wheel kurulumu, 20 tool MCP smoke ve üretim kontrolü exit 0.

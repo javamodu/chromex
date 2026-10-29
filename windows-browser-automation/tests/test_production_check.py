@@ -49,7 +49,7 @@ class ProductionCheckTests(unittest.TestCase):
 
     def test_registry_cli_ve_mcp_eslesir(self):
         message = self.module.check_registry()
-        self.assertIn("20 komut = 20 tool", message)
+        self.assertIn("21 komut = 21 tool", message)
 
     def test_main_basarili(self):
         with redirect_stdout(io.StringIO()) as stdout:

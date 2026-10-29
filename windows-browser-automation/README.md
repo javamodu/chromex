@@ -60,6 +60,7 @@ Hepsi proje kökünden `python -m orchestrator.cli ...` ile çalışır:
 | `vercel-durum` / `vercel-log <id>` | READ | Deployment durumu / build olayları |
 | `vercel-iptal <id>` | MODIFY | Onay ister |
 | `son-kayitlar` | — | SQLite'taki son araştırma kayıtları |
+| `zamanla --dosya <json>` | READ/DRAFT | Dosyadaki işi tek seferlik koşar |
 | `audit-dogrula` | — | Audit hash zincirini baştan doğrular |
 
 Toplanan her şey `data/results.db` (SQLite) içine yazılır; özetleme işi
@@ -67,7 +68,7 @@ agent katmanına (Claude vb.) bırakılmıştır — kod veri toplar, yorum yapm
 
 ## MCP sunucusu
 
-`chromex-otomasyon[mcp]` extra'sı kuruluysa CLI'daki 20 komut MCP tool'ı
+`chromex-otomasyon[mcp]` extra'sı kuruluysa CLI'daki 21 komut MCP tool'ı
 olarak sunulur:
 
 ```powershell
@@ -180,7 +181,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-70 test (+ policygate paketinde 41); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+75 test (+ policygate paketinde 41); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
 gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
 Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır; canlı MCP

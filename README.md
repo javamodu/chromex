@@ -86,7 +86,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 - ✅ Onay kapısı (READ/DRAFT/SEND/MODIFY/DELETE)
 - ✅ Audit zinciri (SHA-256)
 - ✅ Policy yönetimi
-- ✅ MCP sunucusu (`chromex-mcp`, 20 tool)
+- ✅ MCP sunucusu (`chromex-mcp`, 21 tool)
 
 ### Hızlı Başlangıç
 ```powershell
@@ -122,7 +122,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + MCP sunucusu + 70 test |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 9 worker + CLI + MCP sunucusu + 75 test |
 | policygate | ✅ v1.1.0 (güncel) | 6 modül + 41 test (docs/policy-gate-taslak.md) |
 
 Faz 2 sprintleri: `plans/FAZ2-SPRINTLER.md`
@@ -139,7 +139,7 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
-**Toplam test:** 118 (policygate 41 + wba 70 + model yönetimi 7)
+**Toplam test:** 123 (policygate 41 + wba 75 + model yönetimi 7)
 **Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
 **Güncelleme:** 2026-10-29
