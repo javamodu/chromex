@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import tempfile
 import unittest
@@ -130,6 +131,28 @@ class HttpRetryTests(unittest.TestCase):
             self.http.request_json("GET", "https://x/a", "test", max_retries=0)
         self.assertNotIn("super-gizli-deger-9", str(ctx.exception))
         self.assertIn("***", str(ctx.exception))
+
+    def test_audit_kayitlarinda_url_sorgusu_redakte_edilir(self):
+        token = "sorgu-icinde-gizli-token"
+        self.queue[:] = [_FakeResp(500), _FakeResp(200, {"ok": 1})]
+        self.http.request_json(
+            "GET", f"https://x/a?token={token}", "test")
+        kayitlar = [
+            json.loads(satir)
+            for satir in audit._audit_file().read_text(
+                encoding="utf-8").splitlines()
+            if satir.strip()
+        ]
+        http_kayitlari = [
+            kayit for kayit in kayitlar
+            if kayit["event"] in ("http_request", "http_retry")
+        ]
+        self.assertEqual(len(http_kayitlari), 3)
+        self.assertEqual(
+            [kayit["details"]["url"] for kayit in http_kayitlari],
+            ["https://x/a?***"] * 3,
+        )
+        self.assertNotIn(token, str(kayitlar))
 
 
 if __name__ == "__main__":

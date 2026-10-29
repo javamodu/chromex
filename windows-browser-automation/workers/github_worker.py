@@ -16,6 +16,7 @@ from core.http import request_json
 
 WORKER = "github"
 API = "https://api.github.com"
+SUBPROCESS_TIMEOUT = 60
 
 
 def _gh_available() -> bool:
@@ -38,6 +39,7 @@ def search_repos(query: str, limit: int = 10) -> list[dict]:
             ["gh", "search", "repos", query, "--limit", str(limit),
              "--json", "fullName,description,stargazersCount,url"],
             capture_output=True, text=True, check=True,
+            timeout=SUBPROCESS_TIMEOUT,
         ).stdout
         items = json.loads(out or "[]")
     else:
@@ -90,7 +92,8 @@ def create_pr(title: str, body: str = "", base: str = "main",
         try:
             head = subprocess.run(
                 ["git", "branch", "--show-current"],
-                capture_output=True, text=True).stdout.strip()
+                capture_output=True, text=True,
+                timeout=SUBPROCESS_TIMEOUT).stdout.strip()
         except FileNotFoundError:
             head = ""
     require(ActionRequest(
@@ -110,7 +113,8 @@ def create_pr(title: str, body: str = "", base: str = "main",
         cmd += ["--head", head]
     if draft:
         cmd.append("--draft")
-    out = subprocess.run(cmd, capture_output=True, text=True)
+    out = subprocess.run(cmd, capture_output=True, text=True,
+                         timeout=SUBPROCESS_TIMEOUT)
     if out.returncode != 0:
         raise RuntimeError((out.stderr or out.stdout).strip()[:500])
     url = out.stdout.strip().splitlines()[-1] if out.stdout.strip() else ""

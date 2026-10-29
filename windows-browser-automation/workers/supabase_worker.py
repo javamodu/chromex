@@ -18,6 +18,7 @@ from policygate import ActionRequest, audit, require, secrets
 from core.http import request_json
 
 WORKER = "supabase"
+SUBPROCESS_TIMEOUT = 60
 _MUTATING = {"push", "deploy", "reset", "delete", "unlink", "restore", "seed"}
 # Fail-closed: bilinen salt-okunur alt komutlardan biri yoksa komut onaya düşer;
 # böylece CLI'ye sonradan eklenen tehlikeli komutlar sessizce geçemez.
@@ -59,7 +60,8 @@ def cli(args: list[str]) -> str:
     else:
         audit.log_event("supabase_cli", WORKER, "READ", "auto",
                         {"komut": komut})
-    out = subprocess.run(["supabase", *args], capture_output=True, text=True)
+    out = subprocess.run(["supabase", *args], capture_output=True, text=True,
+                         timeout=SUBPROCESS_TIMEOUT)
     if out.returncode != 0:
         raise RuntimeError((out.stderr or out.stdout).strip()[:500])
     return out.stdout

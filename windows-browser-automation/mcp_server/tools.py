@@ -40,7 +40,7 @@ def _property_schema(kwargs: dict[str, Any]) -> dict[str, Any]:
     return schema
 
 
-def _spec_from_command(command: Any) -> ToolSpec:
+def _spec_from_command(command: cli.Command) -> ToolSpec:
     properties: dict[str, Any] = {}
     required: list[str] = []
     for arg_name, kwargs in command.args:
@@ -61,13 +61,20 @@ def _spec_from_command(command: Any) -> ToolSpec:
     )
 
 
-TOOLS: tuple[ToolSpec, ...] = tuple(
-    _spec_from_command(command) for command in cli._COMMANDS
-)
+def get_tool_registry() -> tuple[ToolSpec, ...]:
+    """CLI'nin kamu komut kaydından türetilen tool registry'yi döndürür."""
+    return tuple(
+        _spec_from_command(command)
+        for command in cli.get_commands()
+    )
+
+
+TOOL_REGISTRY: tuple[ToolSpec, ...] = get_tool_registry()
+TOOLS: tuple[ToolSpec, ...] = TOOL_REGISTRY
 
 
 def tool_by_name(name: str) -> ToolSpec | None:
-    return next((tool for tool in TOOLS if tool.name == name), None)
+    return next((tool for tool in TOOL_REGISTRY if tool.name == name), None)
 
 
 def to_cli_args(spec: ToolSpec, arguments: dict[str, Any]) -> list[str]:

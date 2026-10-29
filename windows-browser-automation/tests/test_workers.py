@@ -76,6 +76,14 @@ class GitHubWorkerTests(WorkerTestCase):
         self.assertEqual(items[0]["fullName"], "a/b")
         self.assertEqual(len(store.recent("github", 5)), 1)
 
+    def test_search_repos_gh_cagrisi_timeout_kullanir(self):
+        fake = json.dumps([])
+        with mock.patch.object(self.worker, "_gh_available", return_value=True), \
+             mock.patch.object(self.worker.subprocess, "run") as run:
+            run.return_value = mock.Mock(stdout=fake, returncode=0)
+            self.worker.search_repos("test")
+        self.assertEqual(run.call_args.kwargs["timeout"], 60)
+
     def test_search_repos_rest_fallback(self):
         payload = {"items": [{"full_name": "x/y", "description": None,
                               "stargazers_count": 3,
@@ -116,6 +124,15 @@ class GitHubWorkerTests(WorkerTestCase):
             url = self.worker.create_pr("başlık", head="feature")
         self.assertEqual(url, "https://github.com/a/b/pull/1")
         self.assertEqual(captured["level"], "MODIFY")
+
+    def test_create_pr_gh_cagrisi_timeout_kullanir(self):
+        with mock.patch.object(self.worker, "_gh_available", return_value=True), \
+             mock.patch.object(self.worker, "require"), \
+             mock.patch.object(self.worker.subprocess, "run") as run:
+            run.return_value = mock.Mock(
+                stdout="https://github.com/a/b/pull/1\n", stderr="", returncode=0)
+            self.worker.create_pr("baslik", head="feature")
+        self.assertEqual(run.call_args.kwargs["timeout"], 60)
 
 
 def _gmail_svc(list_payload: dict, get_payload: dict) -> mock.MagicMock:
@@ -359,6 +376,15 @@ class SupabaseWorkerTests(WorkerTestCase):
             out = self.worker.cli(["status"])
         require_mock.assert_not_called()
         self.assertEqual(out, "ok")
+
+    def test_cli_cagrisi_timeout_kullanir(self):
+        with mock.patch.object(self.worker.shutil, "which",
+                               return_value="/usr/bin/supabase"), \
+             mock.patch.object(self.worker, "require"), \
+             mock.patch.object(self.worker.subprocess, "run") as run:
+            run.return_value = mock.Mock(returncode=0, stdout="ok", stderr="")
+            self.worker.cli(["status"])
+        self.assertEqual(run.call_args.kwargs["timeout"], 60)
 
     def test_cli_bilinmeyen_komut_onay_ister(self):
         # Fail-closed: salt-okunur listesinde olmayan komut MODIFY sayılır.

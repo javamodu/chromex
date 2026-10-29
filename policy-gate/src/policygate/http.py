@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import random
 import time
+from urllib.parse import urlsplit, urlunsplit
 from typing import Any
 
 try:
@@ -40,6 +41,13 @@ def _wait_seconds(attempt: int, retry_after: str | None) -> float:
     return min(wait, 60.0)
 
 
+def _redact_url(url: str) -> str:
+    """Audit kayitlari icin URL'nin sorgu bolumunu tamamen maskeler."""
+    parsed = urlsplit(url)
+    masked_query = "***" if parsed.query else ""
+    return secrets.redact(urlunsplit(parsed._replace(query=masked_query)))
+
+
 def request_json(
     method: str,
     url: str,
@@ -55,6 +63,7 @@ def request_json(
     if requests is None:
         raise RuntimeError(
             "requests kurulu değil — pip install 'policy-gate[http]' ile kurun.")
+    audit_url = _redact_url(url)
     attempt = 0
     while True:
         try:
@@ -69,7 +78,7 @@ def request_json(
                     f"({attempt + 1} deneme): {exc}") from exc
             wait = _wait_seconds(attempt, None)
             audit.log_event("http_retry", worker, level, "auto", {
-                "url": url, "neden": type(exc).__name__,
+                "url": audit_url, "neden": type(exc).__name__,
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
             _log.warning(  # sessiz bekleyis tuzagi: varsayilan seviyede gorunur
             "%s ağ hatası — %.1fs sonra tekrar (%d/%d)",
@@ -79,14 +88,14 @@ def request_json(
             continue
 
         audit.log_event("http_request", worker, level, "auto", {
-            "method": method.upper(), "url": url,
+            "method": method.upper(), "url": audit_url,
             "status": resp.status_code, "deneme": attempt + 1})
 
         retryable = resp.status_code == 429 or resp.status_code >= 500
         if retryable and attempt < max_retries:
             wait = _wait_seconds(attempt, resp.headers.get("Retry-After"))
             audit.log_event("http_retry", worker, level, "auto", {
-                "url": url, "neden": f"HTTP {resp.status_code}",
+                "url": audit_url, "neden": f"HTTP {resp.status_code}",
                 "deneme": attempt + 1, "bekleme_sn": round(wait, 1)})
             _log.warning(  # sessiz bekleyis tuzagi: varsayilan seviyede gorunur
             "%s HTTP %s — %.1fs sonra tekrar (%d/%d)",

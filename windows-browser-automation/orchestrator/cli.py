@@ -47,6 +47,11 @@ def command(name: str, help: str, args: ArgSpec = ()):
     return deco
 
 
+def get_commands() -> tuple[Command, ...]:
+    """Kamu CLI komut kayıt tablosu (MCP adaptörü gibi tüketiciler için)."""
+    return tuple(_COMMANDS)
+
+
 def _print(obj) -> None:
     if isinstance(obj, (list, dict)) and not obj:
         print("(sonuç bulunamadı)")  # ham "[]"/"{}" hata sanılıyor

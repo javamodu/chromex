@@ -93,6 +93,10 @@ chromex-mcp
   zinciriyle eklenir; dosyada sonradan yapılan tek karakterlik değişiklik bile
   `audit-dogrula` ile yakalanır. Secret değerleri yazılmadan önce otomatik
   maskelenir (`***`).
+- HTTP audit kayıtlarında URL’nin sorgu bölümü tamamen maskelenir; token gibi
+  query parametreleri zincire düşmez.
+- `gh` ve `supabase` CLI çağrıları 60 saniyelik timeout ile korunur; takılan
+  süreçler otomasyonu süresiz kilitleyemez.
 
 ## Servis notları
 
@@ -157,7 +161,7 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-53 test (+ policygate paketinde 35); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+56 test (+ policygate paketinde 36); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
 HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
 gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
 Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır.
@@ -167,16 +171,16 @@ Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır.
 | Parça | Satır |
 |---|---|
 | core/ (store, http köprüsü, oauth) | 123 |
-| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 834 |
-| orchestrator/cli.py (registry desenli) | 290 |
-| mcp_server/ (tool şeması, onay köprüsü, sunucu adaptörü) | 241 |
-| tests/ | 799 |
+| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 840 |
+| orchestrator/cli.py (registry desenli) | 295 |
+| mcp_server/ (tool şeması, onay köprüsü, sunucu adaptörü) | 248 |
+| tests/ | 825 |
 | blender/ | 47 |
-| Python toplam | **2.334** |
+| Python toplam | **2.378** |
 | Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
-policygate paketinde yaşar: 678 satır + 428 satır test (`../policy-gate/`).
+policygate paketinde yaşar: 687 satır + 451 satır test (`../policy-gate/`).
 
 ## Bilinen sadeleştirmeler
 

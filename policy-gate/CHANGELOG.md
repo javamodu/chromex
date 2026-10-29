@@ -2,7 +2,7 @@
 
 Bu proje [semver](https://semver.org/lang/tr/) izler.
 
-## [Yayimlanmadi]
+## [1.1.0] - 2026-10-29
 
 ### Eklendi
 - `preflight(req)`: ag/IO oncesi erken kapi — policy-deny ve etkilesimsiz
@@ -17,6 +17,10 @@ Bu proje [semver](https://semver.org/lang/tr/) izler.
   artik `utf-8-sig` ile okunuyor).
 - HTTP retry/backoff mesajlari warning seviyesinde — uzun bekleyisler artik
   varsayilan log seviyesinde gorunur.
+- HTTP audit kayitlarinda URL sorgu bolumu tamamen maskeleniyor; token gibi
+  query parametreleri zincire dusmuyor.
+- `gh` ve `supabase` CLI cagrilarina 60 saniyelik timeout eklendi; takilan
+  surecler otomasyonu kilitleyemiyor.
 
 ## [1.0.0] - 2026-10-13
 

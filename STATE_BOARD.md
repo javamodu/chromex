@@ -4,9 +4,9 @@
 Yok (Sprint 2 tamamlandı; tek insan işi PyPI trusted publisher kaydı).
 
 ## Son damgalar
-- 2026-10-26 · Gece teslimi: policygate 35/35 + wba 53/53 test yeşil (toplam 88), repo temiz, HEAD = origin/master; kalan tek iş PyPI trusted publisher kaydı
+- 2026-10-29 · Keskin kılıç seti: policygate 36/36 + wba 56/56 test yeşil (toplam 92); HTTP URL redaksiyonu, subprocess timeout, kamu CLI registry ve v1.1.0 senkronu tamam
 - 2026-10-25 · Sprint 2: `mcp_server/` adaptörü kuruldu — 20 CLI komutu MCP tool'ı, `MCPApprovalChannel` fail-closed onay köprüsü, `chromex-mcp` giriş noktası, `[mcp]` optional extra; testler 35+53=88 yeşil
-- 2026-10-12 · İskelet kuruldu (katman-kur.ps1): L1+L5 dosyaları + plans/handoff + kararlar + raporlar dizinleri
+- 2026-10-12 · İskelet kuruldu (L1+L5+plans+kararlar+raporlar).
 - 2026-10-14 · Gece vardiyası: 2 subagent (CLI insan-testi + drift/plugin) → QA raporu %100 kapandı: 5/5 P1 (EOF fail-closed, tek-satır hata, cp1252, preflight kapısı, google import guardu) + 6/6 işlevsel P2 (BOM toleransı, retry görünürlüğü, exit 3, boş-sonuç mesajı, ok karakterleri, arg help'leri); testler 35+42=77 yeşil; plugin iskeleti kuruldu (.claude-plugin + skills/chromex-sozlesme)
 
 ## Bekleyen onaylar

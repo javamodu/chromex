@@ -7,7 +7,7 @@ from typing import Any
 from policygate import approval
 
 from .approval import MCPApprovalChannel
-from .tools import TOOLS, ToolSpec, execute_tool
+from .tools import ToolSpec, execute_tool, get_tool_registry
 
 
 def _annotation(kwargs: dict[str, Any]) -> type:
@@ -56,7 +56,7 @@ def _tool_function(spec: ToolSpec):
 
 
 def register_tools(server: Any) -> None:
-    for spec in TOOLS:
+    for spec in get_tool_registry():
         server.tool()(_tool_function(spec))
 
 

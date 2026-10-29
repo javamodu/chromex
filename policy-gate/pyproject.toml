@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "policy-gate"  # PyPI'da "policygate" dolu; import adı policygate kalır
-version = "1.0.0"
+version = "1.1.0"
 description = "AI ajanları için sıfır-bağımlılıklı onay kapısı + SHA-256 audit zinciri (stdlib-only)"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -15,13 +15,15 @@ ne onay vardır ne de sonradan "kim neyi ne zaman yaptı" sorusunun kanıtı.
 ## Çözüm
 
 ```python
-from policygate import ActionRequest, require
+from policygate import ActionRequest, preflight, require
 
-require(ActionRequest(
+istek = ActionRequest(
     worker="gmail", action="gmail.send", level="SEND",
     summary="ahmet@ornek.com'a teklif e-postası gönderilecek",
     details={"konu": "Teklif", "boyut": "2.1 KB"},
-))
+)
+preflight(istek)  # Ağ/IO öncesi kesin redleri yakalar.
+require(istek)    # Nihai onay kararı burada verilir.
 # → policy'ye bakılır, gerekirse terminalde TAM detay gösterilir,
 #   yalnızca birebir 'EVET' onay sayılır, karar hash zincirine yazılır.
 ```
@@ -70,6 +72,8 @@ ok, mesaj = verify_chain()   # (True, "Zincir sağlam: 42 kayıt.")
 ```
 
 Ortam değişkenleri: `POLICY_FILE`, `AUDIT_DIR`, `OTOMASYON_LOG`.
+`policy.json` UTF-8 ve UTF-8 BOM ile yazılmış dosyaları okur; PowerShell
+5.1'in BOM'lu çıktısı yanlış policy'ye düşürmez.
 
 ## Onay kanalları
 
@@ -91,10 +95,14 @@ Webhook yanıtı JSON `{"approve": true}` olmalı; ağ hatası red sayılır
 
 `pip install "policy-gate[http]"` → retry/backoff + secret maskeli hatalar
 üreten `policygate.http.request_json` kullanılabilir (requests ister).
+Retry bekleme mesajları warning seviyesinde görünür; uzun ağ denemeleri
+sessizce kilitlenmiş gibi durmaz.
+HTTP audit kayıtlarında URL’nin sorgu bölümü tamamen maskelenir; token gibi
+query parametreleri zincire düşmez.
 
 ## Durum
 
-**1.0.0 — yayına hazır.** `windows-browser-automation` bu paketi doğrudan
+**1.1.0 — güncel.** `windows-browser-automation` bu paketi doğrudan
 kullanıyor (v0.2 cutover tamam). PyPI yayını için kalan manuel adımlar:
-paket adı müsaitlik kontrolü, trusted publisher tanımı, gerçek repo URL'si
+trusted publisher tanımı
 — bkz. `../docs/policy-gate-taslak.md`.

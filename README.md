@@ -16,14 +16,14 @@ chromex/
 │   ├── PLAN.md / PROMPT.md / DECISIONS.md → Şablonlar
 │   └── docs/                        → Orkestrasyon planı
 ├── docs/                            → Tasarım taslakları + arşiv (eski TECH envanterleri)
-├── policy-gate/                     → policygate paketi (v1.0.0, yayına hazır): onay kapısı + audit zinciri
+├── policy-gate/                     → policygate paketi (v1.1.0, güncel): onay kapısı + audit zinciri
 └── windows-browser-automation/      → Windows/Browser otomasyonu
     ├── README.md
     ├── core/                        → store (SQLite), http köprüsü, oauth (güvenlik çekirdeği policygate'te)
     ├── workers/                     → github, gmail, x, linkedin (API + CDP okuyucu), canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
     ├── mcp_server/                  → 20 CLI komutunu MCP tool'ına çevirir
-    ├── tests/                       → 53 birim test (core + worker + MCP + parite, offline)
+    ├── tests/                       → 56 birim test (core + worker + MCP + parite, offline)
     ├── config/                      → policy.json, MCP config (.env.example paket kökünde)
     └── scripts/                     → setup.ps1, Chrome başlat/durdur
 ```
@@ -107,8 +107,8 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + MCP sunucusu + 53 test |
-| policygate | ✅ v1.0.0 (yayına hazır) | 6 modül + 35 test (docs/policy-gate-taslak.md) |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 8 worker + CLI + MCP sunucusu + 56 test |
+| policygate | ✅ v1.1.0 (güncel) | 6 modül + 36 test (docs/policy-gate-taslak.md) |
 
 ---
 
