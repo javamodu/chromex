@@ -79,9 +79,9 @@ class McpSmokeTests(unittest.TestCase):
             sys.modules["mcp"] = self.old_mcp
 
     def test_eksik_mcp_paketi_net_hata_verir(self):
-        sys.modules.pop("mcp", None)
-        with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
-            self.assertEqual(self.module.main(), 2)
+        with mock.patch.dict(sys.modules, {"mcp": None}):
+            with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
+                self.assertEqual(self.module.main(), 2)
         self.assertIn("missing_dependency", stdout.getvalue())
 
     def test_yirmi_tool_basarili(self):
