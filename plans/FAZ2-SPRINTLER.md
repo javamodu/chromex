@@ -18,9 +18,9 @@ açmak, görsel panel yazmak veya geniş refactor yapmak yoktur.
 | 3 — Zamanlayıcı + canlı koşum | 210 | 40 | 0 | 250 |
 | 4 — Model API canlı çağrı + teslim | 110 | 50 | 0 | 160 |
 | **Plan toplamı** | **740** | **170** | **0** | **910** |
-| **Kategori bütçesi kalır** | 50 | 19 | 12 | — |
+| **Kategori bütçesi kalır** | 50 | 13 | 12 | — |
 
-Toplam tavanın kalan payı **281 LOC**'dir; bunun **200 LOC**'u yalnız toplam
+Toplam tavanın kalan payı **275 LOC**'dir; bunun **200 LOC**'u yalnız toplam
 tavanından gelir. Kategori bütçeleri ayrı olarak bağlayıcıdır.
 
 Tavan dağılımı: 5.000 kod / 3.500 doküman / 300 yapılandırma ve destek.

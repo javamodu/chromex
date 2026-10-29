@@ -1,9 +1,10 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Yok (Sprint 2 tamamlandı; tek insan işi PyPI trusted publisher kaydı).
+Yok (SSOT çekirdeği tamamlandı; Faz 2 Sprint 1 hazır).
 
 ## Son damgalar
+- 2026-10-29 · `586112b` · SSOT çekirdeği kuruldu: ANAYASA, tasarım manifestosu, sözlük, ajan kuralları ve Faz 2 sprint planı; sert LOC tavanı 9.000 (mevcut 7.816); 99 test yeşil.
 - 2026-10-29 · `ae7532e` · API model yönetimi eklendi: `glm-5.3` varsayılan, `codefastglm53unlimited` ücretsiz model olarak kayıt defterine alındı; 7 offline test yeşil (toplam 99).
 - 2026-10-29 · `4392b91` · Keskin kılıç seti: policygate 36/36 + wba 56/56 test yeşil (toplam 92); HTTP URL redaksiyonu, subprocess timeout, kamu CLI registry ve v1.1.0 senkronu tamam
 - 2026-10-25 · Sprint 2: `mcp_server/` adaptörü kuruldu — 20 CLI komutu MCP tool'ı, `MCPApprovalChannel` fail-closed onay köprüsü, `chromex-mcp` giriş noktası, `[mcp]` optional extra; testler 35+53=88 yeşil
