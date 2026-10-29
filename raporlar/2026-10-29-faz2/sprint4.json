@@ -1,0 +1,18 @@
+{
+  "surum": 1,
+  "tarih": "2026-10-30",
+  "sprint": 4,
+  "kodKaniti": "de66f6a",
+  "model": "glm-5.3",
+  "saglayici": "claude-glm",
+  "arayuz": "paseo-cli",
+  "testler": {"policygate": 41, "wba": 75, "model": 10, "toplam": 126},
+  "mcpToolSayisi": 21,
+  "dogrulamalar": {
+    "offlineTestler": true,
+    "mcpSmoke": true,
+    "productionCheck": true,
+    "canliModelCagrisi": true
+  },
+  "gizliVeri": "raporlanmadi"
+}

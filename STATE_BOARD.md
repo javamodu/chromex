@@ -1,12 +1,12 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-Sprint 3 kod ve canlı koşum tamam: dosya tabanlı zamanlayıcı, `zamanla` CLI
-komutu, READ/DRAFT sıkıştırması, audit ve SQLite kaydı eklendi. Offline
-testler 41+75+7 = 123 yeşil; MCP smoke 21 tool; canlı GitHub koşumu exit 0.
-Canlı Canva export için tasarım kimliği hâlâ bekliyor.
+Sprint 4 kod ve canlı koşum tamam: `model_manager.py sor` gerçek `glm-5.3`
+çağrısı, kayıt dışı model reddi, secret redaksiyonu ve yapılandırılmış
+yanıt şeması eklendi. 41+75+10=126 test, 21 MCP tool ve üretim kontrolü yeşil.
 
 ## Son damgalar
+- 2026-10-30 · `de66f6a` · Sprint 4 kapanışı: Paseo CLI üzerinden `glm-5.3` canlı çağrı, 126 offline test, 21 MCP tool ve üretim kontrolü exit 0.
 - 2026-10-30 · `b470d37` · Sprint 2 kod kapanışı: `request_bytes`, Canva onay/atomik indirme, audit seq+silme denetimi, release onayı ve `production_check.py` eklendi; 41+70+7=118 test, wheel kurulumu, 20 tool MCP smoke ve üretim kontrolü exit 0.
 - 2026-10-29 · `06f2832` · Sprint 1 kapanış: CI run `40924683743` 4/4 success; gerçek MCP smoke 20 tool, policygate wheel kurulumu `1.1.0`, 105 test yeşil.
 - 2026-10-29 · `c928653` · Sprint 1: policygate 1.1.0 wheel üretildi ve kuruldu, gerçek MCP smoke 20 tool exit 0, 105 test yeşil; PyPI workflow kaldırıldı, release komutu taslak modda.
