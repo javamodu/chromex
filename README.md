@@ -8,11 +8,12 @@
 2. `AGENTS.md` — ajan çalışma kuralları
 3. `DESIGN_MANIFESTO.md` — tasarım felsefesi
 4. `GLOSSARY.md` — ortak sözlük
-5. `plans/FAZ2-SPRINTLER.md` — canlı testli Faz 2 planı
-6. `README.md` — kullanıcı yüzeyi
-7. `STATE_BOARD.md` — durum takibi
+5. `plans/FAZ3-SPRINTLER.md` — canlı testli Faz 3 planı
+6. `plans/BACKLOG.md` — tek backlog kaynağı
+7. `README.md` — kullanıcı yüzeyi
+8. `STATE_BOARD.md` — durum takibi
 
-Çelişkide üst sıra kazanır. Toplam LOC tavanı **9.000**; aşım durumunda yeni iş açılmaz.
+Çelişkide üst sıra kazanır. Toplam LOC tavanı **12.000**; aşım durumunda yeni iş açılmaz.
 
 ## 📁 Dizin Yapısı
 
@@ -125,7 +126,8 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Windows Otomasyonu | ✅ ÇALIŞIR | core + 9 worker + CLI + MCP sunucusu + 75 test |
 | policygate | ✅ v1.1.0 (güncel) | 6 modül + 41 test (docs/policy-gate-taslak.md) |
 
-Faz 2 sprintleri: `plans/FAZ2-SPRINTLER.md`
+Faz 3 sprintleri: `plans/FAZ3-SPRINTLER.md`
+Backlog: `plans/BACKLOG.md`
 
 ---
 

@@ -19,10 +19,10 @@ Bu depo için **sert tavan** aşağıdadır:
 
 | Tür | Tavan | Mevcut | Kalan |
 |---|---:|---:|---:|
-| Toplam | 12.000 | 8.688 | 3.312 |
-| Kod | 7.000 | 4.991 | 2.009 |
-| Doküman | 4.500 | 3.408 | 1.092 |
-| Yapılandırma + destek | 500 | 289 | 211 |
+| Toplam | 12.000 | 9.356 | 2.644 |
+| Kod | 7.000 | 5.092 | 1.908 |
+| Doküman | 4.500 | 3.984 | 516 |
+| Yapılandırma + destek | 500 | 280 | 220 |
 
 Mevcut ölçüm 2026-10-30'da `git ls-files --cached --others
 --exclude-standard` ile yapıldı. Sayıma kod, doküman, yapılandırma ve
@@ -51,10 +51,11 @@ Bu tavanlar aşılırsa:
 2. `AGENTS.md`
 3. `DESIGN_MANIFESTO.md`
 4. `GLOSSARY.md`
-5. `plans/FAZ2-SPRINTLER.md`
-6. `README.md`
-7. `STATE_BOARD.md`
-8. Kod ve testler
+5. `plans/FAZ3-SPRINTLER.md`
+6. `plans/BACKLOG.md`
+7. `README.md`
+8. `STATE_BOARD.md`
+9. Kod ve testler
 
 Çelişki olursa üst sıradaki dosya kazanır.
 

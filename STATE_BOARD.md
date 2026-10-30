@@ -1,10 +1,8 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-- bekci raporu: raporlar/takip-sozlesme/2026-10-30.md (untracked — commit bekliyor)
-Sprint 4 kod ve canlı koşum tamam: `model_manager.py sor` gerçek `glm-5.3`
-çağrısı, kayıt dışı model reddi, secret redaksiyonu ve yapılandırılmış
-yanıt şeması eklendi. 41+75+10=126 test, 21 MCP tool ve üretim kontrolü yeşil.
+- Faz 3 kayıt paketi: `plans/FAZ3-SPRINTLER.md`, `plans/BACKLOG.md` ve LOC/SSOT senkronu yazıldı; 126 test, geçiş kapısı ve `git diff --check` exit 0 — commit/push bekliyor.
+- Ajan 477b0083 rapor revizyonu çalışma ağacında ayrı duruyor; bu paketin dışındadır.
 
 ## Son damgalar
 - 2026-10-30 · `3cfd045` · `scripts/gecis_kapisi.ps1` eklendi; offline geçiş kapısı `FAZ2_GECIS_KAPISI_OK` ile tamamlandı.

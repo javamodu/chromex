@@ -12,7 +12,8 @@ Bu depo üç bileşen içerir:
 - `AGENTS.md` — ajan çalışma kuralları
 - `DESIGN_MANIFESTO.md` — tasarım felsefesi
 - `GLOSSARY.md` — terim sözlüğü
-- `plans/FAZ2-SPRINTLER.md` — Faz 2 sprint planı
+- `plans/FAZ3-SPRINTLER.md` — Faz 3 sprint planı
+- `plans/BACKLOG.md` — tek backlog kaynağı
 - `README.md` — kullanıcı yüzeyi
 - `STATE_BOARD.md` — durum takibi
 
@@ -20,13 +21,13 @@ Bu depo üç bileşen içerir:
 
 ## LOC tavanı
 
-- Toplam: **9.000 LOC**
-- Kod: **5.000 LOC**
-- Doküman: **3.500 LOC**
-- Yapılandırma + destek: **300 LOC**
+- Toplam: **12.000 LOC**
+- Kod: **7.000 LOC**
+- Doküman: **4.500 LOC**
+- Yapılandırma + destek: **500 LOC**
 
 Yeni iş açılmadan önce kalan bütçe kontrol edilir; tavan aşılamaz.
-Güncel bütçe ve sprint dağılımı: `ANAYASA.md` ve `plans/FAZ2-SPRINTLER.md`.
+Güncel bütçe ve sprint dağılımı: `ANAYASA.md` ve `plans/FAZ3-SPRINTLER.md`.
 
 ## Komutlar
 
