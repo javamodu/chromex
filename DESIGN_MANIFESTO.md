@@ -20,7 +20,7 @@ Chromex, **az kodla çok iş** yapan bir otomasyon çekirdeğidir. Hedef:
 
 ## LOC disiplini
 
-LOC bir başarı ölçütü değildir. Depo, **9.000 toplam LOC** tavanını aşamaz.
+LOC bir başarı ölçütü değildir. Depo, **12.000 toplam LOC** tavanını aşamaz.
 Yeni iş açılmadan önce:
 
 1. Gerekli tahmini LOC yazılır.
