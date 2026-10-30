@@ -7,6 +7,7 @@ Sprint 4 kod ve canlı koşum tamam: `model_manager.py sor` gerçek `glm-5.3`
 yanıt şeması eklendi. 41+75+10=126 test, 21 MCP tool ve üretim kontrolü yeşil.
 
 ## Son damgalar
+- 2026-10-30 · `3cfd045` · `scripts/gecis_kapisi.ps1` eklendi; offline geçiş kapısı `FAZ2_GECIS_KAPISI_OK` ile tamamlandı.
 - 2026-10-30 · `v1.1.0` · Faz 2 geçiş kapısı kilit etiketi oluşturuldu; kullanıcı yetenek testi bekleniyor.
 - 2026-10-30 · `e01207c` · Ajan 477b0083 tam raporu `raporlar/2026-10-30-ajan-477b0083-tam-rapor/OZET.md` altına yazıldı.
 - 2026-10-30 · LOC tavanı 9.000→12.000; kod 7.000, doküman 4.500, destek 500 olarak güncellendi; platform matrisi raporu `raporlar/2026-10-30-loc-tavani-artirimi/OZET.md` altına eklendi.
