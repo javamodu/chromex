@@ -1,7 +1,7 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-- Faz 3 kayıt paketi: `plans/FAZ3-SPRINTLER.md`, `plans/BACKLOG.md` ve LOC/SSOT senkronu yazıldı; 126 test, geçiş kapısı ve `git diff --check` exit 0 — commit/push bekliyor.
+- Faz 3 kayıt paketi: `80c7a0e` — plan, backlog ve LOC/SSOT senkronu; 126 test, geçiş kapısı ve `git diff --check` exit 0.
 - Ajan 477b0083 rapor revizyonu çalışma ağacında ayrı duruyor; bu paketin dışındadır.
 
 ## Son damgalar
