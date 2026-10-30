@@ -140,6 +140,13 @@ Her sistem kendi dizininde detaylı README içerir:
 ---
 
 **Toplam test:** 126 (policygate 41 + wba 75 + model yönetimi 10)
+
+**Geçiş kapısı senaryosu:**
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\gecis_kapisi.ps1
+```
+
+Canlı model testi için `-Canli`, Chrome CDP aç/kapa testi için `-Chrome` ekleyin.
 **Sürüm:** 1.1.0  
 **Oluşturulma:** 2026-08-06  
 **Güncelleme:** 2026-10-30
