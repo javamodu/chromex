@@ -16,9 +16,9 @@ from mcp_server.approval import MCPApprovalChannel
 
 
 class MCPToolTests(unittest.TestCase):
-    def test_yirmi_bir_tool_tanimlanir(self):
-        self.assertEqual(len(tools.TOOLS), 21)
-        self.assertEqual(len({tool.name for tool in tools.TOOLS}), 21)
+    def test_yirmi_sekiz_tool_tanimlanir(self):
+        self.assertEqual(len(tools.TOOLS), 28)
+        self.assertEqual(len({tool.name for tool in tools.TOOLS}), 28)
 
     def test_schema_ve_cli_eslesmesi(self):
         spec = tools.tool_by_name("github-arastir")
@@ -145,7 +145,7 @@ class MCPServerTests(unittest.TestCase):
     def test_register_tools_imza_ve_cagri(self):
         fake = FakeMCPServer("test")
         server.register_tools(fake)
-        self.assertEqual(len(fake.registered), 21)
+        self.assertEqual(len(fake.registered), 28)
         name, description, fn = fake.registered[0]
         self.assertEqual(name, "github-arastir")
         self.assertEqual(description, "GitHub repo araması")

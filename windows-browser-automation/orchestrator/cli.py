@@ -19,10 +19,11 @@ import os
 import sys
 import traceback
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable
 
-from core import store
-from policygate import ApprovalDenied, audit, secrets
+from core import kasa, site_guvenlik, store
+from policygate import ActionRequest, ApprovalDenied, audit, require, secrets
 
 Handler = Callable[[argparse.Namespace], "int | None"]
 ArgSpec = tuple[tuple[str, dict[str, Any]], ...]
@@ -225,6 +226,152 @@ def _vercel_iptal(args):
     _print(vercel_worker.cancel_deployment(args.deployment_id))
 
 
+# --- YouTube ----------------------------------------------------------------
+
+@command("youtube-arastir", "YouTube araması (READ)",
+         (("sorgu", {"help": 'ör. "chromex otomasyon"'}),
+          ("--limit", {"type": int, "default": 10, "help": "en fazla kayıt (1-50)"}),
+          ("--tur", {"default": None, "help": "arama türü",
+                     "choices": ["video", "channel", "playlist"]})))
+def _youtube_arastir(args):
+    from workers import youtube_worker
+    _print(youtube_worker.search(args.sorgu, args.limit, args.tur or "video"))
+
+
+@command("youtube-detay", "Video detayı: istatistikler + süre (READ)",
+         (("video_id", {"help": "11 karakterli YouTube video kimliği"}),))
+def _youtube_detay(args):
+    from workers import youtube_worker
+    _print(youtube_worker.video_detail(args.video_id))
+
+
+@command("youtube-oynatma-listesi", "Oynatma listesi videoları (READ)",
+         (("liste_id", {"help": "oynatma listesi kimliği (PL...)"}),
+          ("--limit", {"type": int, "default": 25, "help": "en fazla kayıt (1-50)"})))
+def _youtube_oynatma_listesi(args):
+    from workers import youtube_worker
+    _print(youtube_worker.playlist_items(args.liste_id, args.limit))
+
+
+# --- Secret kasası --------------------------------------------------------
+
+@command("secret-kur", "Secret'ları DPAPI kasasına etkileşimli yaz",
+         (("anahtarlar", {"nargs": "*", "default": [],
+                          "help": "yazılacak anahtar adları (adaylar: .env.example)"}),))
+def _secret_kur(args):
+    import getpass
+
+    if not args.anahtarlar:
+        print("Anahtar ad(lar)ı gerekli. Örnek: "
+              "python -m orchestrator.cli secret-kur GITHUB_TOKEN")
+        return 2
+    mevcut: dict[str, str] = {}
+    try:
+        mevcut = kasa.oku()
+    except kasa.KasaHatasi as exc:
+        if kasa.kasa_yolu().exists():
+            print(f"Uyarı: {exc} — kasa sıfırlanarak yeniden kurulacak.")
+    for ad in args.anahtarlar:
+        try:
+            deger = getpass.getpass(f"{ad} değeri (boş bırak = atla): ")
+        except EOFError:
+            print("Etkileşimli terminal gerekli — secret-kur'u elle çalıştırın.")
+            return 1
+        if deger.strip():
+            mevcut[ad] = deger.strip()
+    kasa.yaz(mevcut)
+    audit.log_event("secret_kur", kasa.WORKER, "MODIFY", "done",
+                    {"anahtarlar": sorted(mevcut)})
+    print(f"Kasa güncellendi: {kasa.kasa_yolu()} — {len(mevcut)} anahtar "
+          "(değerler terminale basılmaz).")
+    return 0
+
+
+@command("secret-dogrula", "Secret kasası ve kurulum doğrulaması",
+         (("--gerekli", {"nargs": "*", "default": [],
+                         "help": "zorunlu anahtar adları"}),))
+def _secret_dogrula(args):
+    yol = kasa.kasa_yolu()
+    if not yol.exists():
+        print(f"Kasa yok: {yol} — önce secret-kur çalıştırın.")
+        return 1
+    try:
+        degerler = kasa.oku()
+    except kasa.KasaHatasi as exc:
+        print(f"BOZUK — {exc}")
+        return 1
+    if not degerler:
+        print(f"Kasa boş: {yol} — secret-kur ile anahtar ekleyin.")
+        return 1
+    for ad in sorted(degerler):
+        print(f"{ad}: {len(degerler[ad])} karakter — çözüldü")
+    eksik = [ad for ad in args.gerekli if ad not in degerler]
+    if eksik:
+        print(f"Eksik zorunlu anahtarlar: {', '.join(sorted(eksik))}")
+        return 1
+    if Path(".env").exists():
+        print("Uyarı: düz metin .env hâlâ duruyor — secret-tasi ile kasaya "
+              "taşıyın.")
+    audit.log_event("secret_dogrula", kasa.WORKER, "READ", "auto",
+                    {"anahtar_sayisi": len(degerler)})
+    print("SECRET_DOGRULA_OK")
+    return 0
+
+
+@command("secret-tasi", "Düz metin .env değerlerini kasaya taşı, dosyayı SİL (onay ister)",
+         (("--dosya", {"default": ".env", "help": "taşınacak düz metin dosya"}),))
+def _secret_tasi(args):
+    yol = Path(args.dosya)
+    if not yol.exists():
+        print(f"Dosya yok: {yol}")
+        return 1
+    degerler = kasa.duz_oku(yol)
+    if not degerler:
+        print(f"{yol} içinde taşınacak dolu anahtar yok.")
+        return 1
+    try:
+        birlesik = {**kasa.oku(), **degerler}
+    except kasa.KasaHatasi as exc:
+        print(f"Hata: hedef kasa okunamıyor — {exc}")
+        return 1
+    require(ActionRequest(
+        worker=kasa.WORKER, action="kasa.duz_dosya_sil", level="DELETE",
+        summary=f"{yol} içindeki {len(degerler)} değer kasaya taşındıktan "
+                "sonra düz metin dosya SİLİNECEK.",
+        details={"dosya": str(yol), "taşınan_anahtarlar": sorted(degerler)},
+    ))
+    kasa.yaz(birlesik)
+    kasa.oku()  # geri okuma: taşınan değerler gerçekten çözülüyor (kanıt)
+    yol.unlink()
+    audit.log_event("secret_tasi", kasa.WORKER, "DELETE", "done",
+                    {"dosya": str(yol), "anahtarlar": sorted(degerler)})
+    print(f"{len(degerler)} anahtar kasaya taşındı; {yol} silindi.")
+    return 0
+
+
+# --- Site güvenliği --------------------------------------------------------
+
+@command("site-kesfet", "Site güvenlik profilini, limitleri ve pilot planını göster",
+         (("site", {"nargs": "?", "default": None,
+                    "help": "site adı (ör. linkedin, x, youtube, chatgpt)"}),
+          ("--pilot", {"action": "store_true",
+                       "help": "pilot adımını simüle et (ağ çağrısı yapılmaz)"}),
+          ("--eylem", {"choices": ["okuma", "yazma", "gonderme"],
+                       "default": "okuma", "help": "pilot eylemi"}),
+          ("--adim", {"type": int, "default": 1,
+                      "help": "pilot adım sayısı"})))
+def _site_kesfet(args):
+    if args.site is None:
+        _print(site_guvenlik.kesfet())
+        return 0
+    if args.pilot:
+        sonuc = site_guvenlik.pilot(args.site, args.eylem, args.adim)
+        _print(sonuc)
+        return 0 if sonuc["izinli"] else 1
+    _print(site_guvenlik.kesfet(args.site))
+    return 0
+
+
 # --- Yerel ----------------------------------------------------------------
 
 @command("son-kayitlar", "Sonuç deposundaki son kayıtlar",
@@ -267,6 +414,13 @@ def build_parser() -> argparse.ArgumentParser:
 def dispatch(args: argparse.Namespace) -> int:
     for cmd in _COMMANDS:
         if cmd.name == args.cmd:
+            harita = site_guvenlik.komut_haritasi(args.cmd)
+            if harita is not None:
+                site, eylem = harita
+                sonuc = site_guvenlik.kontrol_et(site, eylem)
+                if not sonuc["izinli"]:
+                    print(f"Hata: {sonuc['mesaj']}")
+                    return 1
             return cmd.handler(args) or 0
     return 2  # argparse required=True yakalar; burası savunma amaçlı
 
@@ -279,6 +433,11 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(errors="replace")
         except (AttributeError, ValueError):
             pass
+    # Kasa değerleri env'e setdefault ile girer: öncelik süreç env > kasa > .env.
+    # Bozuk kasa süreci çökertmez (fail-closed) ama tek satır uyarıyla görünür.
+    kasa_hatasi = kasa.yukle_env()
+    if kasa_hatasi:
+        print(f"Uyarı: {kasa_hatasi} — kasayı yoksayıyorum.")
     secrets.load_dotenv()
     args = build_parser().parse_args(argv)
     try:

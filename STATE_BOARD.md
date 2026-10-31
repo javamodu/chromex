@@ -1,10 +1,12 @@
 # STATE_BOARD — chromex
 
 ## Aktif iş
-- Faz 3 kayıt paketi: `80c7a0e` — plan, backlog ve LOC/SSOT senkronu; 126 test, geçiş kapısı ve `git diff --check` exit 0.
+- bekci raporu: raporlar/takip-sozlesme/2026-10-31.md (untracked — commit bekliyor)
+- Faz 3 kod paketi hazır: YouTube worker + DPAPI secret kasası + site bazlı güvenlik/keşif eklendi; 190 offline test, 28 MCP tool ve 10.806 LOC ölçüldü. Tam offline doğrulama exit 0; kanıt `raporlar/2026-10-31-site-bazli-guvenlik/OZET.md`; canlı pilot, YouTube/GitHub doğrulaması ve commit bekliyor.
 - Ajan 477b0083 rapor revizyonu çalışma ağacında ayrı duruyor; bu paketin dışındadır.
 
 ## Son damgalar
+- 2026-10-31 · çalışma ağacı · Site bazlı güvenlik ve keşif: 139 wba test, 28 tool, 10.806 LOC; canlı doğrulama ve commit bekliyor.
 - 2026-10-30 · `3cfd045` · `scripts/gecis_kapisi.ps1` eklendi; offline geçiş kapısı `FAZ2_GECIS_KAPISI_OK` ile tamamlandı.
 - 2026-10-30 · `v1.1.0` · Faz 2 geçiş kapısı kilit etiketi oluşturuldu; kullanıcı yetenek testi bekleniyor.
 - 2026-10-30 · `e01207c` · Ajan 477b0083 tam raporu `raporlar/2026-10-30-ajan-477b0083-tam-rapor/OZET.md` altına yazıldı.

@@ -1,0 +1,34 @@
+{
+  "surum": 1,
+  "tarih": "2026-10-31",
+  "baslik": "Site bazli guvenlik ve kesif",
+  "durum": "kod-tamam-canli-pilot-bekliyor",
+  "testler": {
+    "siteGuvenlik": {"sayi": 19, "sonuc": "OK", "exit": 0},
+    "wba": {"sayi": 139, "sonuc": "OK", "exit": 0},
+    "policygate": {"sayi": 41, "sonuc": "OK", "exit": 0},
+    "model": {"sayi": 10, "sonuc": "OK", "exit": 0}
+  },
+  "araclar": {
+    "mcpSmoke": {"tool": 28, "sonuc": "OK", "exit": 0},
+    "productionCheck": {"komut": 28, "tool": 28, "sonuc": "OK", "exit": 0},
+    "gitDiffCheck": {"sonuc": "OK", "exit": 0}
+  },
+  "loc": {
+    "toplam": 10806,
+    "kod": 6608,
+    "dokuman": 3894,
+    "destek": 304
+  },
+  "ozellikler": {
+    "siteler": ["github", "gmail", "x", "linkedin", "youtube", "chatgpt", "canva", "supabase", "vercel"],
+    "eylemler": ["okuma", "yazma", "gonderme"],
+    "durumDosyasi": "data/site_limits.json",
+    "failClosed": true
+  },
+  "bekleyen": [
+    "canli-pilot-dogrulamasi",
+    "chatgpt-worker",
+    "commit-ve-push"
+  ]
+}

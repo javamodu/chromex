@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXPECTED_TOOL_COUNT = 21
+EXPECTED_TOOL_COUNT = 28
 
 
 async def _run_smoke(

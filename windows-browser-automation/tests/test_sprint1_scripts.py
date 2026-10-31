@@ -86,11 +86,11 @@ class McpSmokeTests(unittest.TestCase):
                 self.assertEqual(self.module.main(), 2)
         self.assertIn("missing_dependency", stdout.getvalue())
 
-    def test_yirmi_bir_tool_basarili(self):
-        sys.modules["mcp"] = _fake_mcp(21)
+    def test_beklenen_tool_sayisi_basarili(self):
+        sys.modules["mcp"] = _fake_mcp(28)
         with mock.patch("sys.stdout", new_callable=io.StringIO) as stdout:
             self.assertEqual(self.module.main(), 0)
-        self.assertIn("MCP_SMOKE_OK tools=21", stdout.getvalue())
+        self.assertIn("MCP_SMOKE_OK tools=28", stdout.getvalue())
 
     def test_eksik_tool_sayisi_kirmizi(self):
         sys.modules["mcp"] = _fake_mcp(19)

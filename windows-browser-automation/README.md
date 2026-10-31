@@ -11,10 +11,10 @@ Agent / sen
    │
    ├─ MCP config (0 satır kod) ── chrome-devtools-mcp / playwright-mcp / terminator
    ├─ Playwright CLI (0 satır kod) ── tekrarlanabilir tarayıcı akışları
-   ├─ chromex-mcp ── 20 CLI komutunu MCP tool'ına çevirir
+   ├─ chromex-mcp ── 28 CLI komutunu MCP tool'ına çevirir
    └─ python -m orchestrator.cli ── API worker'ları
                 │
-                ├─ workers/  github · gmail · x · linkedin (API + tarayıcı) · canva · supabase · vercel
+                ├─ workers/  github · gmail · x · linkedin (API + tarayıcı) · youtube · canva · supabase · vercel
                 ├─ policygate (paket)  policy → onay kapısı → audit zinciri → redaksiyon
                 ├─ core/     store (SQLite) · http köprüsü · oauth
                 └─ blender/  bpy örneği
@@ -59,6 +59,13 @@ Hepsi proje kökünden `python -m orchestrator.cli ...` ile çalışır:
 | `supabase-sorgu <tablo> --limit 20` | READ | PostgREST salt-okunur sorgu |
 | `vercel-durum` / `vercel-log <id>` | READ | Deployment durumu / build olayları |
 | `vercel-iptal <id>` | MODIFY | Onay ister |
+| `youtube-arastir "sorgu" --limit 10 --tur video` | READ | YouTube arama, oynatma listesi ya da kanal |
+| `youtube-detay <video_id>` | READ | Video istatistikleri ve süre |
+| `youtube-oynatma-listesi <liste_id> --limit 20` | READ | Oynatma listesi videoları |
+| `secret-kur GITHUB_TOKEN` | MODIFY | DPAPI kasasına değer yazar |
+| `secret-dogrula --gerekli GITHUB_TOKEN` | READ | Kasayı ve zorunlu anahtarları doğrular |
+| `secret-tasi --dosya .env` | DELETE | Düz metin dosyayı kasaya taşır, onay ister |
+| `site-kesfet linkedin --pilot` | READ | Site limitlerini, risk notunu ve pilot planını gösterir |
 | `son-kayitlar` | — | SQLite'taki son araştırma kayıtları |
 | `zamanla --dosya <json>` | READ/DRAFT | Dosyadaki işi tek seferlik koşar |
 | `audit-dogrula` | — | Audit hash zincirini baştan doğrular |
@@ -68,7 +75,7 @@ agent katmanına (Claude vb.) bırakılmıştır — kod veri toplar, yorum yapm
 
 ## MCP sunucusu
 
-`chromex-otomasyon[mcp]` extra'sı kuruluysa CLI'daki 21 komut MCP tool'ı
+`chromex-otomasyon[mcp]` extra'sı kuruluysa CLI'daki 28 komut MCP tool'ı
 olarak sunulur:
 
 ```powershell
@@ -181,9 +188,9 @@ Viewport'a mouse göndermek son çaredir; içerik işleri bpy ile yapılır.
 python -m unittest discover -s tests -v
 ```
 
-75 test (+ policygate paketinde 41); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
-HTTP retry/backoff, depo katmanı, MCP adaptörü ve tüm worker'ların (github,
-gmail, x, linkedin, canva, supabase, vercel) mock'lu akışlarını kapsar.
+139 test (+ policygate paketinde 41); onay kapısı, hash zinciri kurcalama tespiti, secret redaksiyonu,
+HTTP retry/backoff, depo katmanı, MCP adaptörü, DPAPI kasası, site limitleri ve tüm worker'ların (github,
+gmail, x, linkedin, youtube, canva, supabase, vercel) mock'lu akışlarını kapsar.
 Ağ/gh/Google/Playwright/gerçek MCP SDK gerektirmez, offline çalışır; canlı MCP
 smoke testi ayrıca `scripts\mcp_smoke.py` ile koşar; üretim öncesi
 toplu kontrol `python scripts\production_check.py` ile yapılır.
@@ -203,15 +210,15 @@ PyPI kullanılmaz.
 
 | Parça | Satır |
 |---|---|
-| core/ (store, http köprüsü, oauth) | 123 |
-| workers/ (github, gmail, x, linkedin API + tarayıcı, canva, supabase, vercel) | 840 |
-| orchestrator/cli.py (registry desenli) | 295 |
+| core/ (store, http köprüsü, oauth, DPAPI kasası, site güvenliği) | 580 |
+| workers/ (github, gmail, x, linkedin API + tarayıcı, youtube, canva, supabase, vercel) | 1.096 |
+| orchestrator/cli.py (registry desenli) | 461 |
 | mcp_server/ (tool şeması, onay köprüsü, sunucu adaptörü) | 248 |
-| scripts/ (MCP smoke, yerel release) | 157 |
-| tests/ | 960 |
+| scripts/ (MCP smoke, yerel release) | 344 |
+| tests/ | 1.900 |
 | blender/ | 47 |
-| Python toplam | **2.670** |
-| Config (MCP, policy, .env örneği) + PowerShell scriptleri | 186 |
+| Python toplam | **4.676** |
+| Kök + yapılandırma (README, .env örneği, JSON) | 350 |
 
 Güvenlik çekirdeği (approval, audit, policy, secrets, log, http) ayrı
 policygate paketinde yaşar: 687 satır + 451 satır test (`../policy-gate/`).

@@ -35,10 +35,10 @@ chromex/
 └── windows-browser-automation/      → Windows/Browser otomasyonu
     ├── README.md
     ├── core/                        → store (SQLite), http köprüsü, oauth (güvenlik çekirdeği policygate'te)
-    ├── workers/                     → github, gmail, x, linkedin (API + CDP okuyucu), canva, supabase, vercel
+    ├── workers/                     → github, gmail, x, linkedin (API + CDP okuyucu), youtube, canva, supabase, vercel
     ├── orchestrator/cli.py          → Tek giriş noktası
-    ├── mcp_server/                  → 20 CLI komutunu MCP tool'ına çevirir
-    │   ├── tests/                       → 75 birim test (core + worker + MCP + parite, offline)
+    ├── mcp_server/                  → 28 CLI komutunu MCP tool'ına çevirir
+    │   ├── tests/                       → 139 birim test (core + worker + MCP + parite, offline)
     ├── config/                      → policy.json, MCP config (.env.example paket kökünde)
     └── scripts/                     → setup.ps1, Chrome başlat/durdur
 ```
@@ -87,7 +87,8 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 - ✅ Onay kapısı (READ/DRAFT/SEND/MODIFY/DELETE)
 - ✅ Audit zinciri (SHA-256)
 - ✅ Policy yönetimi
-- ✅ MCP sunucusu (`chromex-mcp`, 21 tool)
+- ✅ MCP sunucusu (`chromex-mcp`, 28 tool)
+- ✅ YouTube salt-okunur worker + Windows DPAPI secret kasası
 
 ### Hızlı Başlangıç
 ```powershell
@@ -123,7 +124,7 @@ MAX=50 bash /path/to/claude-code-automation/ralph.sh
 | Sistem | Durum | Dosyalar |
 |--------|-------|----------|
 | Claude Code Otomasyonu | ✅ HAZIR | ralph.sh + audit köprüsü + sandbox + şablonlar |
-| Windows Otomasyonu | ✅ ÇALIŞIR | core + 9 worker + CLI + MCP sunucusu + 75 test |
+| Windows Otomasyonu | ✅ ÇALIŞIR | core + 10 worker + CLI + MCP sunucusu + 139 test |
 | policygate | ✅ v1.1.0 (güncel) | 6 modül + 41 test (docs/policy-gate-taslak.md) |
 
 Faz 3 sprintleri: `plans/FAZ3-SPRINTLER.md`
@@ -141,7 +142,7 @@ Her sistem kendi dizininde detaylı README içerir:
 
 ---
 
-**Toplam test:** 126 (policygate 41 + wba 75 + model yönetimi 10)
+**Toplam test:** 190 (policygate 41 + wba 139 + model yönetimi 10)
 
 **Geçiş kapısı senaryosu:**
 ```powershell

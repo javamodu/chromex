@@ -5,20 +5,21 @@
 
 ## Kapsam
 
-Faz 3, mevcut çekirdeğin üzerine yeni platformlar ekler. Her platform
+Faz 3, mevcut çekirdeğin üzerine **YouTube ve secret kasası** ekler. Her iş
 dikey keskinlik ile yazılır: API/CLI worker + policygate onayı + offline test
-+ MCP tool + canlı doğrulama. Web panel, Chrome eklentisi, masaüstü GUI ve
-genel DOM kazıma çerçevesi kapsam dışıdır.
++ MCP tool + canlı doğrulama. Telegram, Reddit, Notion, Trello, Mastodon ve
+Bluesky Faz 4 adaylarına aktarılır. Web panel, Chrome eklentisi, masaüstü GUI
+ve genel DOM kazıma çerçevesi kapsam dışıdır.
 
 ## Başlangıç durumu
 
 | Ölçüt | Değer |
 |---|---:|
-| Offline test | 126 (policygate 41 + wba 75 + model 10) |
-| MCP tool | 21 |
+| Offline test | 190 (policygate 41 + wba 139 + model 10) |
+| MCP tool | 28 |
 | Sürüm | v1.1.0 |
 | Faz 2 geçiş kapısı | `scripts/gecis_kapisi.ps1` ile tamamlandı |
-| Güncel toplam LOC | 9.356 |
+| Güncel toplam LOC | 10.806 |
 
 ## LOC bütçesi
 
@@ -26,22 +27,20 @@ genel DOM kazıma çerçevesi kapsam dışıdır.
 |---|---:|---:|---:|---:|
 | 5 — Faz 3 kayıt senkronu | 0 | 262 | 0 | 262 |
 | 6 — YouTube salt-okunur | 230 | 80 | 30 | 340 |
-| 7 — Notion + Trello salt-okunur/taslak | 360 | 100 | 40 | 500 |
-| 8 — Telegram + Mastodon oku/taslak/gönder | 280 | 90 | 40 | 410 |
-| 9 — Bluesky + Reddit salt-okunur | 320 | 90 | 40 | 450 |
-| 10 — Secret ve kurulum sertleştirme | 260 | 70 | 30 | 360 |
-| **Plan toplamı** | **1.450** | **692** | **180** | **2.322** |
+| 7 — Secret ve kurulum sertleştirme (eski Sprint 9) | 260 | 70 | 30 | 360 |
+| **Gerçekleşen artış** | **996** | **3** | **21** | **1.020** |
 
-Sprint 5 sonrası güncel kullanım **9.356 LOC**'dir. Kalan sprintler
-uygulanırsa tahmini toplam **11.416 LOC** olur; tampon **584 LOC** kalır.
+Backlog yöntem tablosu sonrası güncel kullanım **10.806 LOC**'dir. Kalan
+tampon **1.194 LOC**'dur.
+kalır.
 Kategori dağılımı:
 
 | Tür | Tavan | Mevcut | Plan | Kalan |
 |---|---:|---:|---:|---:|
-| Toplam | 12.000 | 9.356 | 2.060 | 584 |
-| Kod | 7.000 | 5.092 | 1.450 | 458 |
-| Doküman | 4.500 | 3.984 | 430 | 86 |
-| Yapılandırma/destek | 500 | 280 | 180 | 40 |
+| Toplam | 12.000 | 10.806 | 1.397 | 1.194 |
+| Kod | 7.000 | 6.608 | 1.504 | 392 |
+| Doküman | 4.500 | 3.894 | -129 | 606 |
+| Yapılandırma/destek | 500 | 304 | 22 | 196 |
 
 ## Sprint kuralları
 
@@ -78,6 +77,8 @@ git diff --check
 
 ## Sprint 6 — YouTube salt-okunur worker
 
+**Durum:** Kod tamamlandı; canlı YouTube doğrulaması insan onayı bekliyor.
+
 **Hedef:** YouTube Data API ile arama, video detayı ve oynatma listesi okuma.
 
 **İşler**
@@ -100,72 +101,9 @@ python -m orchestrator.cli audit-dogrula
 - `mcp_smoke.py` yeni tool sayısını listeler.
 - Offline test sayacı CI, kök README ve wba README ile senkron olur.
 
-## Sprint 7 — Notion + Trello salt-okunur/taslak
+## Sprint 7 — Secret ve kurulum sertleştirme
 
-**Hedef:** Kişisel bilgi yönetimi panosunu güvenli biçimde okumak.
-
-**İşler**
-- Notion: sayfa arama, veritabanı sorgulama, sayfa oluşturma `DRAFT`.
-- Trello: pano/kart/liste okuma ve kart taslağı oluşturma.
-- Her dış etki `ActionRequest` + `preflight()` + `require()` akışından geçer.
-- Offline testler: izin hatası, etik doğrulama, rate limit, audit.
-
-**Canlı doğrulama**
-```powershell
-python -m orchestrator.cli notion-arastir "chromex"
-python -m orchestrator.cli trello-panolar
-python -m orchestrator.cli trello-taslak PANO_KIMLIGI "Faz 3 test kartı"
-```
-
-**Kabul**
-- Notion ve Trello okuma sonuçları gerçek servis yanıtından gelir.
-- Taslak oluşturma etkileşimli terminalde onay ister.
-- Etkileşimsiz ortamda taslak/red testi `exit 3` döner.
-
-## Sprint 8 — Telegram + Mastodon oku/taslak/gönder
-
-**Hedef:** Mesaj platformlarında okuma, taslak ve onaylı gönderim.
-
-**İşler**
-- Telegram Bot API: mesaj okuma ve birebir `SEND` mesajı.
-- Mastodon REST: timeline okuma, taslak kaydetme, `SEND` gönderi.
-- SEND etkileşimsiz oturumda her zaman reddedilir.
-- Offline testler: onay, red, karakter sınırı, hata, redaksiyon, audit.
-
-**Canlı doğrulama**
-```powershell
-python -m orchestrator.cli telegram-mesajlar --limit 10
-python -m orchestrator.cli mastodon-taslak "Faz 3 canlı doğrulama"
-python -m orchestrator.cli mastodon-gonder TASLAK_KIMLIGI
-```
-
-**Kabul**
-- Okuma komutları gerçek servis yanıtını döner.
-- Taslak kaydı audit'e girer; gönderim açık insan onayı ister.
-- İnsan onayı verilmezse hiçbir dış mesaj gitmez.
-
-## Sprint 9 — Bluesky + Reddit salt-okunur
-
-**Hedef:** Protokol ve OAuth çeşitliliğini güvenli okuma alanında genişletmek.
-
-**İşler**
-- Bluesky AT Protocol ile profil ve gönderi arama.
-- Reddit OAuth ile subreddit ve gönderi okuma.
-- Rate limit ve protokol hataları kullanıcıya tek satır mesajla iner.
-- Offline testler: kimlik doğrulama, limit, boş sonuç, hata, audit.
-
-**Canlı doğrulama**
-```powershell
-python -m orchestrator.cli bluesky-ara "chromex" --limit 10
-python -m orchestrator.cli reddit-gonderiler "chromex" --limit 10
-```
-
-**Kabul**
-- Her iki platformdan en az bir gerçek kayıt döner.
-- Token çıktıda ve audit gövdesinde maskelenir.
-- Yazma yetkisi istenmez; worker salt-okunur kalır.
-
-## Sprint 10 — Secret ve kurulum sertleştirme
+**Durum:** Kod tamamlandı; canlı GitHub doğrulaması insan onayı bekliyor.
 
 **Hedef:** Kurulum sürtünmesini azaltıp secret depolamayı dosyadan çıkarmak.
 
@@ -186,6 +124,17 @@ python -m orchestrator.cli github-arastir "chromex" --limit 1
 - Yeni token düz metin dosyaya yazılmaz.
 - Kurulum kontrolü tek komutla `exit 0` döner.
 - Mevcut GitHub canlı çağrısı secret kasası üzerinden çalışır.
+
+## Faz 4 adayları
+
+Kullanıcı kararıyla Faz 3 kapsamından çıkarıldı; yeni tavan/kapsam kararı
+beklenir:
+
+- Notion + Trello salt-okunur/taslak
+- Mastodon oku/taslak/gönder
+- Bluesky salt-okunur
+- Telegram oku/taslak/gönder
+- Reddit salt-okunur
 
 ## Faz 3 dışı
 

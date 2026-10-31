@@ -4,8 +4,8 @@ from __future__ import annotations
 from policygate import __version__, audit, policy
 
 BEKLENEN_SURUM = "1.1.0"
-BEKLENEN_KOMUT = 21
-BEKLENEN_TOOL = 21
+BEKLENEN_KOMUT = 28
+BEKLENEN_TOOL = 28
 
 
 def check_policy() -> str:
